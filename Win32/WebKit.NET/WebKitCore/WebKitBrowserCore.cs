@@ -43,6 +43,7 @@ namespace WebKit
         private object _scriptObject = null;
 
         // delegates for WebKit events
+        private WebResourceLoadDelegate resourceLoadDelegate;
         private WebFrameLoadDelegate frameLoadDelegate;
         private WebDownloadDelegate downloadDelegate;
         private WebPolicyDelegate policyDelegate;
@@ -57,6 +58,11 @@ namespace WebKit
         /// Occurs when the DocumentTitle property value changes.
         /// </summary>
         public event EventHandler DocumentTitleChanged = delegate { };
+
+        /// <summary>
+        /// Occurs when the WebKitBrowser requests a resource from a URL.
+        /// </summary>
+        public event ResourceRequestedEventHandler ResourceRequested = delegate { };
 
         /// <summary>
         /// Occurs when the WebKitBrowser control finishes loading a document.
@@ -583,6 +589,9 @@ namespace WebKit
         {
             activationContext.Activate();
 
+            resourceLoadDelegate = new WebResourceLoadDelegate();
+            Marshal.AddRef(Marshal.GetIUnknownForObject(resourceLoadDelegate));
+
             frameLoadDelegate = new WebFrameLoadDelegate();
             Marshal.AddRef(Marshal.GetIUnknownForObject(frameLoadDelegate));
 
@@ -603,6 +612,7 @@ namespace WebKit
             webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressFinishedNotification", webView);
 
             webView.setPolicyDelegate(policyDelegate);
+            webView.setResourceLoadDelegate(resourceLoadDelegate);
             webView.setFrameLoadDelegate(frameLoadDelegate);
             webView.setDownloadDelegate(downloadDelegate);
             webView.setUIDelegate(uiDelegate);
@@ -626,6 +636,17 @@ namespace WebKit
             frameLoadDelegate.DidFailLoadWithError += new DidFailLoadWithErrorEvent(frameLoadDelegate_DidFailLoadWithError);
             frameLoadDelegate.DidFailProvisionalLoadWithError += new DidFailProvisionalLoadWithErrorEvent(frameLoadDelegate_DidFailProvisionalLoadWithError);
             frameLoadDelegate.DidClearWindowObject += new DidClearWindowObjectEvent(frameLoadDelegate_DidClearWindowObject);
+
+            // ResourceLoadDelegate events
+            resourceLoadDelegate.DidCancelAuthenticationChallenge += new DidResourceCancelAuthenticationChallengeEvent(resourceLoadDelegate_DidCancelAuthenticationChallenge);
+            resourceLoadDelegate.DidFailLoadingWithError += new DidResourceFailLoadWithErrorEvent(resourceLoadDelegate_DidFailLoadingWithError);
+            resourceLoadDelegate.DidFinishLoadFromDataSource += new DidResourceFinishLoadFromDataSourceEvent(resourceLoadDelegate_DidFinishLoadFromDataSource);
+            resourceLoadDelegate.DidReceiveAuthenticationChallenge += new DidResourceReceiveAuthenticationChallengeEvent(resourceLoadDelegate_DidReceiveAuthenticationChallenge);
+            resourceLoadDelegate.DidReceiveContentLength += new DidResourceReceiveDataOfLengthEvent(resourceLoadDelegate_DidReceiveContentLength);
+            resourceLoadDelegate.DidReceiveResponse += new DidResourceReceiveResponseEvent(resourceLoadDelegate_DidReceiveResponse);
+            resourceLoadDelegate.IdentifierForInitialRequest += new ResourceIdentifierForInitialRequestEvent(resourceLoadDelegate_IdentifierForInitialRequest);
+            resourceLoadDelegate.PlugInFailedWithError += new ResourcePlugInFailedWithErrorEvent(resourceLoadDelegate_PlugInFailedWithError);
+            resourceLoadDelegate.WillSendRequest += new WillResourceSendRequestEvent(resourceLoadDelegate_WillSendRequest);
 
             // DownloadDelegate events
             downloadDelegate.DidReceiveResponse += new DidReceiveResponseEvent(downloadDelegate_DidReceiveResponse);
@@ -687,7 +708,59 @@ namespace WebKit
 
         #endregion
 
-        #region WebFrameLoadDelegate event handlers 
+        #region WebResourceLoadDelegate event handlers
+
+        private void resourceLoadDelegate_WillSendRequest(WebView WebView, uint identifier, IWebURLRequest request, WebURLResponse redirectResponse, IWebDataSource dataSource, out IWebURLRequest output)
+        {
+            ResourceRequestedEventArgs e = new ResourceRequestedEventArgs(request.url());
+            ResourceRequested(this, e);
+            if (e.Response.Override)
+            {
+                // Rewrite the URL to be a Base64 encoded string of data.
+                string target = "data:" + e.Response.ContentType + ";base64," + Convert.ToBase64String(System.Text.Encoding.ASCII.GetBytes(e.Response.ContentData));
+                WebMutableURLRequestClass response = new WebMutableURLRequestClass();
+                response.initWithURL(target, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 10);
+                output = response;
+            }
+            else
+                output = null;
+        }
+
+        private void resourceLoadDelegate_PlugInFailedWithError(WebView WebView, WebError error, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_IdentifierForInitialRequest(WebView WebView, IWebURLRequest request, IWebDataSource dataSource, uint identifier)
+        {
+        }
+
+        private void resourceLoadDelegate_DidReceiveResponse(WebView WebView, uint identifier, WebURLResponse response, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidReceiveContentLength(WebView WebView, uint identifier, uint length, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidReceiveAuthenticationChallenge(WebView WebView, uint identifier, IWebURLAuthenticationChallenge challenge, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidFinishLoadFromDataSource(WebView WebView, uint identifier, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidFailLoadingWithError(WebView WebView, uint identifier, WebError error, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidCancelAuthenticationChallenge(WebView WebView, uint identifier, IWebURLAuthenticationChallenge challenge, IWebDataSource dataSource)
+        {
+        }
+
+        #endregion
+
+        #region WebFrameLoadDelegate event handlers
 
         private void frameLoadDelegate_DidCommitLoadForFrame(WebView WebView, IWebFrame frame)
         {
@@ -1071,5 +1144,12 @@ namespace WebKit
                     window.SetProperty("external", (object)ObjectForScripting);
             }
         }
+
+        #region IWebKitBrowser Members
+
+
+        
+
+        #endregion
     }
 }

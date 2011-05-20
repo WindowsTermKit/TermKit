@@ -13,6 +13,11 @@ namespace WebKit
         event EventHandler DocumentTitleChanged;
 
         /// <summary>
+        /// Occurs when the WebKitBrowser requests a resource from a URL.
+        /// </summary>
+        event ResourceRequestedEventHandler ResourceRequested;
+
+        /// <summary>
         /// Occurs when the WebKitBrowser control finishes loading a document.
         /// </summary>
         event WebBrowserDocumentCompletedEventHandler DocumentCompleted;

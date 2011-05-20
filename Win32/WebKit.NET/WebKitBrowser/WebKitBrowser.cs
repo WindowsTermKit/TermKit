@@ -87,6 +87,15 @@ namespace WebKit
         }
 
         /// <summary>
+        /// Occurs when the WebKitBrowser requests a resource from a URL.
+        /// </summary>
+        public event ResourceRequestedEventHandler ResourceRequested
+        {
+            add { core.ResourceRequested += value; }
+            remove { core.ResourceRequested -= value; }
+        }
+
+        /// <summary>
         /// Occurs when the WebKitBrowser control has navigated to a new document and has begun loading it.
         /// </summary>
         public event WebBrowserNavigatedEventHandler Navigated
