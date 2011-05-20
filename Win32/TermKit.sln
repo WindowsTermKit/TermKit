@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{C8D86A65-E66B-4BA7-82F6-6800E16A392C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TermKit Service", "Server\TermKit Service.csproj", "{C8D86A65-E66B-4BA7-82F6-6800E16A392C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Console", "Console\Console.csproj", "{AD0FF480-8A62-4398-86D7-A8FF62909FF8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TermKit Console", "Console\TermKit Console.csproj", "{AD0FF480-8A62-4398-86D7-A8FF62909FF8}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "JSCore", "WebKit.NET\JSCore\JSCore.vcproj", "{287EEE45-1390-44D5-982F-0B96D4A077DA}"
 EndProject

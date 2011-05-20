@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Server")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("TermKit Service")]
+[assembly: AssemblyDescription("The service which provides the TermKit UI to the end console.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("Server")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCompany("Redpoint Software")]
+[assembly: AssemblyProduct("TermKit Service")]
+[assembly: AssemblyCopyright("Copyright © Redpoint Software")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

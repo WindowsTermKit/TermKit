@@ -42,8 +42,6 @@
             this.c_WebKit.Name = "c_WebKit";
             this.c_WebKit.Size = new System.Drawing.Size(806, 495);
             this.c_WebKit.TabIndex = 0;
-            this.c_WebKit.Url = new System.Uri("", System.UriKind.Relative);
-            this.c_WebKit.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.c_WebKit_Navigating);
             // 
             // MainForm
             // 

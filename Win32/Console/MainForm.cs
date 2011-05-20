@@ -16,16 +16,7 @@ namespace Console
             InitializeComponent();
 
             // Set the initial document content for the TermKit window.
-            this.c_WebKit.Navigate("local:init");
-        }
-
-        private void c_WebKit_Navigating(object sender, WebBrowserNavigatingEventArgs e)
-        {
-            e.Cancel = true;
-            if (e.Url.ToString() == "local:init")
-                this.c_WebKit.DocumentText = Console.Properties.Resources.HTMLInitializing;
-            else
-                e.Cancel = false;
+            this.c_WebKit.Navigate("file:///C:/Server Storage/Projects/TermKit/HTML/index.html");//http://localhost:33333/index.html");
         }
     }
 }
