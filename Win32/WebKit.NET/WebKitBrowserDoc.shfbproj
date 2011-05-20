@@ -1,0 +1,45 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <!-- The configuration and platform will be used to determine which
+         assemblies to include from solution and project documentation
+         sources -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0816c726-296f-4320-a155-a7633d184d4a}</ProjectGuid>
+    <SHFBSchemaVersion>1.8.0.3</SHFBSchemaVersion>
+    <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
+         Studio adds them anyway -->
+    <AssemblyName>Documentation</AssemblyName>
+    <RootNamespace>Documentation</RootNamespace>
+    <Name>Documentation</Name>
+    <!-- SHFB properties -->
+    <OutputPath>.\docs\</OutputPath>
+    <HtmlHelpName>Documentation</HtmlHelpName>
+    <HelpTitle>WebKit .NET</HelpTitle>
+    <NamingMethod>MemberName</NamingMethod>
+    <FrameworkVersion>2.0.50727</FrameworkVersion>
+    <HelpFileFormat>HtmlHelp1, Website</HelpFileFormat>
+    <DocumentationSources>
+      <DocumentationSource sourceFile="bin\Release\WebKitBrowser.dll" xmlns="" />
+      <DocumentationSource sourceFile="bin\Release\WebKitBrowser.xml" xmlns="" />
+    </DocumentationSources>
+    <Preliminary>True</Preliminary>
+    <CopyrightText>Copyright &amp;#169%3b 2009 WebKit .NET Project</CopyrightText>
+    <FeedbackEMailAddress>webkitdotnet%40peterdn.com</FeedbackEMailAddress>
+    <FeedbackEMailLinkText>Peter Nelson</FeedbackEMailLinkText>
+    <ProjectSummary>WebKit .NET is a WinForms control library wrapper for WebKit written in C#. The aim is to make it easy for developers to incorporate WebKit into their .NET applications.</ProjectSummary>
+    <NamespaceSummaries>
+      <NamespaceSummaryItem name="WebKit" isDocumented="True" xmlns="">Contains classes for creating instances of and managing communication with WebKit COM components.</NamespaceSummaryItem>
+      <NamespaceSummaryItem name="WebKit.Properties" isDocumented="True" xmlns="">Contains information about the WebKitBrowser assembly.</NamespaceSummaryItem>
+    </NamespaceSummaries>
+  </PropertyGroup>
+  <!-- There are no properties for these two groups but they need to appear in
+       order for Visual Studio to perform the build. -->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  </PropertyGroup>
+  <!-- Import the SHFB build targets -->
+  <Import Project="$(SHFBROOT)\SandcastleHelpFileBuilder.targets" />
+</Project>

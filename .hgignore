@@ -1,0 +1,7 @@
+syntax: glob
+*/bin/*
+*/obj/*
+Win32/WebKit.NET/JSCore/Debug/*
+*.ncb
+*.suo
+*.git*
