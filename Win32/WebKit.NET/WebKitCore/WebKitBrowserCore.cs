@@ -43,6 +43,7 @@ namespace WebKit
         private object _scriptObject = null;
 
         // delegates for WebKit events
+        private WebResourceLoadDelegate resourceLoadDelegate;
         private WebFrameLoadDelegate frameLoadDelegate;
         private WebDownloadDelegate downloadDelegate;
         private WebPolicyDelegate policyDelegate;
@@ -52,11 +53,16 @@ namespace WebKit
 
         // public events, roughly the same as in WebBrowser class
         // using the null object pattern to avoid null tests
-        
+
         /// <summary>
         /// Occurs when the DocumentTitle property value changes.
         /// </summary>
         public event EventHandler DocumentTitleChanged = delegate { };
+
+        /// <summary>
+        /// Occurs when the WebKitBrowser requests a resource from a URL.
+        /// </summary>
+        public event ResourceRequestedEventHandler ResourceRequested = delegate { };
 
         /// <summary>
         /// Occurs when the WebKitBrowser control finishes loading a document.
@@ -122,7 +128,7 @@ namespace WebKit
         /// Occurs when JavaScript requests a prompt panel to be displayed via the prompt() function.
         /// </summary>
         public event ShowJavaScriptPromptPanelEventHandler ShowJavaScriptPromptPanel = delegate { };
-        
+
         #endregion
 
         #region Public properties
@@ -147,7 +153,7 @@ namespace WebKit
                 if (loaded)
                 {
                     Uri result;
-                    return Uri.TryCreate(webView.mainFrame().dataSource().request().url(), 
+                    return Uri.TryCreate(webView.mainFrame().dataSource().request().url(),
                         UriKind.Absolute, out result) ? result : null;
                 }
                 else
@@ -290,7 +296,7 @@ namespace WebKit
         /// Gets or sets whether the control can navigate to another page 
         /// once it's initial page has loaded.
         /// </summary>
-        public bool AllowNavigation 
+        public bool AllowNavigation
         {
             get
             {
@@ -505,10 +511,10 @@ namespace WebKit
         public object ObjectForScripting
         {
             get { return _scriptObject; }
-            set 
-            { 
-                _scriptObject = value; 
-                CreateWindowScriptObject((JSContext)GetGlobalScriptContext()); 
+            set
+            {
+                _scriptObject = value;
+                CreateWindowScriptObject((JSContext)GetGlobalScriptContext());
             }
         }
 
@@ -540,12 +546,12 @@ namespace WebKit
         /// <param name="host">The host.</param>
         public void Initialize(IWebKitBrowserHost host)
         {
-            if(host == null)
+            if (host == null)
                 throw new ArgumentNullException("host");
 
             this.host = host;
 
-            if(!host.InDesignMode)
+            if (!host.InDesignMode)
             {
                 // Control Events            
                 this.host.Load += new EventHandler(WebKitBrowser_Load);
@@ -554,7 +560,7 @@ namespace WebKit
                 // If this is the first time the library has been loaded,
                 // initialize the activation context required to load the
                 // WebKit COM component registration free
-                if((actCtxRefCount++) == 0)
+                if ((actCtxRefCount++) == 0)
                 {
                     FileInfo fi = new FileInfo(Assembly.GetExecutingAssembly().Location);
                     activationContext = new ActivationContext(Path.Combine(fi.DirectoryName, "WebKitBrowser.dll.manifest"));
@@ -583,6 +589,9 @@ namespace WebKit
         {
             activationContext.Activate();
 
+            resourceLoadDelegate = new WebResourceLoadDelegate();
+            Marshal.AddRef(Marshal.GetIUnknownForObject(resourceLoadDelegate));
+
             frameLoadDelegate = new WebFrameLoadDelegate();
             Marshal.AddRef(Marshal.GetIUnknownForObject(frameLoadDelegate));
 
@@ -603,6 +612,7 @@ namespace WebKit
             webNotificationCenter.defaultCenter().addObserver(webNotificationObserver, "WebProgressFinishedNotification", webView);
 
             webView.setPolicyDelegate(policyDelegate);
+            webView.setResourceLoadDelegate(resourceLoadDelegate);
             webView.setFrameLoadDelegate(frameLoadDelegate);
             webView.setDownloadDelegate(downloadDelegate);
             webView.setUIDelegate(uiDelegate);
@@ -626,6 +636,17 @@ namespace WebKit
             frameLoadDelegate.DidFailLoadWithError += new DidFailLoadWithErrorEvent(frameLoadDelegate_DidFailLoadWithError);
             frameLoadDelegate.DidFailProvisionalLoadWithError += new DidFailProvisionalLoadWithErrorEvent(frameLoadDelegate_DidFailProvisionalLoadWithError);
             frameLoadDelegate.DidClearWindowObject += new DidClearWindowObjectEvent(frameLoadDelegate_DidClearWindowObject);
+
+            // ResourceLoadDelegate events
+            resourceLoadDelegate.DidCancelAuthenticationChallenge += new DidResourceCancelAuthenticationChallengeEvent(resourceLoadDelegate_DidCancelAuthenticationChallenge);
+            resourceLoadDelegate.DidFailLoadingWithError += new DidResourceFailLoadWithErrorEvent(resourceLoadDelegate_DidFailLoadingWithError);
+            resourceLoadDelegate.DidFinishLoadFromDataSource += new DidResourceFinishLoadFromDataSourceEvent(resourceLoadDelegate_DidFinishLoadFromDataSource);
+            resourceLoadDelegate.DidReceiveAuthenticationChallenge += new DidResourceReceiveAuthenticationChallengeEvent(resourceLoadDelegate_DidReceiveAuthenticationChallenge);
+            resourceLoadDelegate.DidReceiveContentLength += new DidResourceReceiveDataOfLengthEvent(resourceLoadDelegate_DidReceiveContentLength);
+            resourceLoadDelegate.DidReceiveResponse += new DidResourceReceiveResponseEvent(resourceLoadDelegate_DidReceiveResponse);
+            resourceLoadDelegate.IdentifierForInitialRequest += new ResourceIdentifierForInitialRequestEvent(resourceLoadDelegate_IdentifierForInitialRequest);
+            resourceLoadDelegate.PlugInFailedWithError += new ResourcePlugInFailedWithErrorEvent(resourceLoadDelegate_PlugInFailedWithError);
+            resourceLoadDelegate.WillSendRequest += new WillResourceSendRequestEvent(resourceLoadDelegate_WillSendRequest);
 
             // DownloadDelegate events
             downloadDelegate.DidReceiveResponse += new DidReceiveResponseEvent(downloadDelegate_DidReceiveResponse);
@@ -687,7 +708,59 @@ namespace WebKit
 
         #endregion
 
-        #region WebFrameLoadDelegate event handlers 
+        #region WebResourceLoadDelegate event handlers
+
+        private void resourceLoadDelegate_WillSendRequest(WebView WebView, uint identifier, IWebURLRequest request, WebURLResponse redirectResponse, IWebDataSource dataSource, out IWebURLRequest output)
+        {
+            ResourceRequestedEventArgs e = new ResourceRequestedEventArgs(request.url());
+            ResourceRequested(this, e);
+            if (e.Response.Override)
+            {
+                // Rewrite the URL to be a Base64 encoded string of data.
+                string target = "data:" + e.Response.ContentType + ";base64," + Convert.ToBase64String(e.Response.ContentData);
+                WebMutableURLRequestClass response = new WebMutableURLRequestClass();
+                response.initWithURL(target, _WebURLRequestCachePolicy.WebURLRequestUseProtocolCachePolicy, 10);
+                output = response;
+            }
+            else
+                output = request;
+        }
+
+        private void resourceLoadDelegate_PlugInFailedWithError(WebView WebView, WebError error, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_IdentifierForInitialRequest(WebView WebView, IWebURLRequest request, IWebDataSource dataSource, uint identifier)
+        {
+        }
+
+        private void resourceLoadDelegate_DidReceiveResponse(WebView WebView, uint identifier, WebURLResponse response, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidReceiveContentLength(WebView WebView, uint identifier, uint length, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidReceiveAuthenticationChallenge(WebView WebView, uint identifier, IWebURLAuthenticationChallenge challenge, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidFinishLoadFromDataSource(WebView WebView, uint identifier, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidFailLoadingWithError(WebView WebView, uint identifier, WebError error, IWebDataSource dataSource)
+        {
+        }
+
+        private void resourceLoadDelegate_DidCancelAuthenticationChallenge(WebView WebView, uint identifier, IWebURLAuthenticationChallenge challenge, IWebDataSource dataSource)
+        {
+        }
+
+        #endregion
+
+        #region WebFrameLoadDelegate event handlers
 
         private void frameLoadDelegate_DidCommitLoadForFrame(WebView WebView, IWebFrame frame)
         {
@@ -735,7 +808,7 @@ namespace WebKit
 
         private void frameLoadDelegate_DidFailLoadWithError(WebView WebView, IWebError error, IWebFrame frame)
         {
-            Error(this, new WebKitBrowserErrorEventArgs(error.localizedDescription())); 
+            Error(this, new WebKitBrowserErrorEventArgs(error.localizedDescription()));
         }
 
         private void frameLoadDelegate_DidClearWindowObject(WebView WebView, IntPtr context, IntPtr windowScriptObject, webFrame frame)
@@ -804,7 +877,7 @@ namespace WebKit
             if (!args.Cancel)
             {
                 WebKitBrowserCore b = new WebKitBrowserCore(host);
-                webView = (WebView) b.webView;
+                webView = (WebView)b.webView;
                 NewWindowCreated(this, new NewWindowCreatedEventArgs(b));
             }
             else
@@ -1050,10 +1123,10 @@ namespace WebKit
 
         public void Dispose(bool disposing)
         {
-            if(disposed)
+            if (disposed)
                 return;
-            
-            if((--actCtxRefCount) == 0 && activationContext != null)
+
+            if ((--actCtxRefCount) == 0 && activationContext != null)
             {
                 activationContext.Dispose();
             }
@@ -1071,5 +1144,12 @@ namespace WebKit
                     window.SetProperty("external", (object)ObjectForScripting);
             }
         }
+
+        #region IWebKitBrowser Members
+
+
+
+
+        #endregion
     }
 }

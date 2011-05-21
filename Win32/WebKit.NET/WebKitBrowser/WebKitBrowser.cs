@@ -69,6 +69,15 @@ namespace WebKit
         // using the null object pattern to avoid null tests
         
         /// <summary>
+        /// Occurs when the WebKitBrowser requests a resource from a URL.
+        /// </summary>
+        public event ResourceRequestedEventHandler ResourceRequested
+        {
+            add { core.ResourceRequested += value; }
+            remove { core.ResourceRequested -= value; }
+        }
+
+        /// <summary>
         /// Occurs when the DocumentTitle property value changes.
         /// </summary>
         public event EventHandler DocumentTitleChanged

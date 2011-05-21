@@ -42,6 +42,12 @@
             this.c_WebKit.Name = "c_WebKit";
             this.c_WebKit.Size = new System.Drawing.Size(806, 495);
             this.c_WebKit.TabIndex = 0;
+            this.c_WebKit.Url = null;
+            this.c_WebKit.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.c_WebKit_Navigating);
+            this.c_WebKit.ShowJavaScriptConfirmPanel += new WebKit.ShowJavaScriptConfirmPanelEventHandler(this.c_WebKit_ShowJavaScriptConfirmPanel);
+            this.c_WebKit.ShowJavaScriptPromptPanel += new WebKit.ShowJavaScriptPromptPanelEventHandler(this.c_WebKit_ShowJavaScriptPromptPanel);
+            this.c_WebKit.ShowJavaScriptAlertPanel += new WebKit.ShowJavaScriptAlertPanelEventHandler(this.c_WebKit_ShowJavaScriptAlertPanel);
+            this.c_WebKit.ResourceRequested += new WebKit.ResourceRequestedEventHandler(this.c_WebKit_ResourceRequested);
             // 
             // MainForm
             // 

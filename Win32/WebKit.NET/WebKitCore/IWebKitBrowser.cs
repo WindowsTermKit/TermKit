@@ -8,6 +8,11 @@ namespace WebKit
     public interface IWebKitBrowser
     {
         /// <summary>
+        /// Occurs when the WebKitBrowser requests a resource from a URL.
+        /// </summary>
+        event ResourceRequestedEventHandler ResourceRequested;
+
+        /// <summary>
         /// Occurs when the DocumentTitle property value changes.
         /// </summary>
         event EventHandler DocumentTitleChanged;

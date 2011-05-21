@@ -24,7 +24,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
 */
 
-// Not used yet.  More info at
+// Basic implementation for handling events when resources are downloaded.  More info at
 // http://developer.apple.com/documentation/Cocoa/Reference/WebKit/Protocols/WebResourceLoadDelegate_Protocol
 
 using System;
@@ -35,53 +35,76 @@ using WebKit.Interop;
 
 namespace WebKit
 {
+    // Delegate definitions WebFrameLoadDelegate events
+    internal delegate void DidResourceCancelAuthenticationChallengeEvent(WebView WebView, uint identifier, IWebURLAuthenticationChallenge challenge, IWebDataSource dataSource);
+    internal delegate void DidResourceFailLoadWithErrorEvent(WebView WebView, uint identifier, WebError error, IWebDataSource dataSource);
+    internal delegate void DidResourceFinishLoadFromDataSourceEvent(WebView WebView, uint identifier, IWebDataSource dataSource);
+    internal delegate void DidResourceReceiveAuthenticationChallengeEvent(WebView WebView, uint identifier, IWebURLAuthenticationChallenge challenge, IWebDataSource dataSource);
+    internal delegate void DidResourceReceiveDataOfLengthEvent(WebView WebView, uint identifier, uint length, IWebDataSource dataSource);
+    internal delegate void DidResourceReceiveResponseEvent(WebView WebView, uint identifier, WebURLResponse response, IWebDataSource dataSource);
+    internal delegate void ResourceIdentifierForInitialRequestEvent(WebView WebView, IWebURLRequest request, IWebDataSource dataSource, uint identifier);
+    internal delegate void ResourcePlugInFailedWithErrorEvent(WebView WebView, WebError error, IWebDataSource dataSource);
+    internal delegate void WillResourceSendRequestEvent(WebView WebView, uint identifier, IWebURLRequest request, WebURLResponse redirectResponse, IWebDataSource dataSource, out IWebURLRequest output);
+
     internal class WebResourceLoadDelegate : IWebResourceLoadDelegate
     {
+        public event DidResourceCancelAuthenticationChallengeEvent DidCancelAuthenticationChallenge = delegate { };
+        public event DidResourceFailLoadWithErrorEvent DidFailLoadingWithError = delegate { };
+        public event DidResourceFinishLoadFromDataSourceEvent DidFinishLoadFromDataSource = delegate { };
+        public event DidResourceReceiveAuthenticationChallengeEvent DidReceiveAuthenticationChallenge = delegate { };
+        public event DidResourceReceiveDataOfLengthEvent DidReceiveContentLength = delegate { };
+        public event DidResourceReceiveResponseEvent DidReceiveResponse = delegate { };
+        public event ResourceIdentifierForInitialRequestEvent IdentifierForInitialRequest = delegate { };
+        public event ResourcePlugInFailedWithErrorEvent PlugInFailedWithError = delegate { };
+        public event WillResourceSendRequestEvent WillSendRequest = delegate(WebView WebView, uint identifier, IWebURLRequest request, WebURLResponse redirectResponse, IWebDataSource dataSource, out IWebURLRequest output) { output = request; };
+
         #region IWebResourceLoadDelegate Members
 
         public void didCancelAuthenticationChallenge(WebView WebView, uint identifier, IWebURLAuthenticationChallenge challenge, IWebDataSource dataSource)
         {
-            throw new NotImplementedException();
+            DidCancelAuthenticationChallenge(WebView, identifier, challenge, dataSource);
         }
 
         public void didFailLoadingWithError(WebView WebView, uint identifier, WebError error, IWebDataSource dataSource)
         {
-            throw new NotImplementedException();
+            DidFailLoadingWithError(WebView, identifier, error, dataSource);
         }
 
         public void didFinishLoadingFromDataSource(WebView WebView, uint identifier, IWebDataSource dataSource)
         {
-            throw new NotImplementedException();
+            DidFinishLoadFromDataSource(WebView, identifier, dataSource);
         }
 
         public void didReceiveAuthenticationChallenge(WebView WebView, uint identifier, IWebURLAuthenticationChallenge challenge, IWebDataSource dataSource)
         {
-            throw new NotImplementedException();
+            DidReceiveAuthenticationChallenge(WebView, identifier, challenge, dataSource);
         }
 
         public void didReceiveContentLength(WebView WebView, uint identifier, uint length, IWebDataSource dataSource)
         {
-            throw new NotImplementedException();
+            DidReceiveContentLength(WebView, identifier, length, dataSource);
         }
 
         public void didReceiveResponse(WebView WebView, uint identifier, WebURLResponse response, IWebDataSource dataSource)
         {
-            throw new NotImplementedException();
+            DidReceiveResponse(WebView, identifier, response, dataSource);
         }
 
         public void identifierForInitialRequest(WebView WebView, IWebURLRequest request, IWebDataSource dataSource, uint identifier)
         {
-            throw new NotImplementedException();
+            IdentifierForInitialRequest(WebView, request, dataSource, identifier);
         }
 
         public void plugInFailedWithError(WebView WebView, WebError error, IWebDataSource dataSource)
         {
-            throw new NotImplementedException();
+            PlugInFailedWithError(WebView, error, dataSource);
         }
 
         public IWebURLRequest willSendRequest(WebView WebView, uint identifier, IWebURLRequest request, WebURLResponse redirectResponse, IWebDataSource dataSource)
         {
-            throw new NotImplementedException();
+            IWebURLRequest o = null;
+            WillSendRequest(WebView, identifier, request, redirectResponse, dataSource, out o);
+            return o;
         }
 
         #endregion
