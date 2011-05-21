@@ -14,7 +14,7 @@ namespace Console
 
         public static byte[] GetResourceData(string path)
         {
-            System.Diagnostics.Debugger.Log(1, "Resource", "The resource application:///" + path + " was loaded (as " + ClientResources.GetResourceType(path) + ").\r\n");
+            System.Diagnostics.Debugger.Log(1, "Resource", "The resource application://" + path + " was loaded (as " + ClientResources.GetResourceType(path) + ").\r\n");
 
             // Read the file as binary data.
             BinaryReader reader = new BinaryReader(File.Open("../../../../../HTML/" + path, FileMode.Open));

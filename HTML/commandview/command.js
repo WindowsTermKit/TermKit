@@ -71,11 +71,11 @@ cv.command.prototype = {
     this.$element.data('controller', this).attr('class', classes.join(' '));
 
     var sigil = {
-      'ok': '✔',
-      'error': '✖',
-      'warning': '⚠',
+      'ok': '&nbsp;',
+      'error': '&nbsp;',
+      'warning': '?',
     }[this.state];
-    this.$sigil.attr('class', 'sigil sigil-'+this.state).html(this.collapsed ? '▶' : sigil);
+    this.$sigil.attr('class', 'sigil sigil-'+this.state).html(this.collapsed ? '?' : sigil);
 
     this.spinner.$element[(this.state == 'running') ? 'show' : 'hide']();
 

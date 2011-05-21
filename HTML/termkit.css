@@ -169,8 +169,11 @@ body {
 }
 
 .termkitCommand > span.sigil-ok {
-  color: #9f7;
-  text-shadow: 0 0 5px rgba(0, 255, 0, 1), 0 0 10px rgba(0, 255, 0, 1), 0 0 20px rgba(0, 255, 0, 1);
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: #000 url('Images/okay.png');
+  margin-top: -2px;
 }
 
 .termkitCommand > span.sigil-warning {
@@ -178,8 +181,11 @@ body {
 }
 
 .termkitCommand > span.sigil-error {
-  color: #f77;
-  text-shadow: 0 0 5px rgba(255, 0 , 0, 1), 0 0 10px rgba(255, 0 , 0, 1), 0 0 20px rgba(255, 0 , 0, 1);
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background: #000 url('Images/fail.png');
+  margin-top: -2px;
 }
 
 .termkitCommand .termkitSpinner {
