@@ -17,8 +17,8 @@ body {
 /************/
 
 .termkitSpinner {
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   margin: 10px;
   background: #000 url('Images/loading-black.gif');
 }
@@ -164,31 +164,32 @@ body {
   position: absolute;
   left: 15px;
   top: 12px;
-  color: #ccc;
   font-size: 12px;
+  color: #ccc;
 }
 
 .termkitCommand > span.sigil-ok {
-  display: inline-block;
+  background: #000 url('Images/okay.png');
   width: 16px;
   height: 16px;
-  background: #000 url('Images/okay.png');
-  margin-top: -2px;
+  margin: 10px;
 }
 
-.termkitCommand > span.sigil-warning {
-  color: #ff9;
+.termkitCommand > span.sigil-waiting {
+  background: #000 url('Images/wait.png');
+  width: 16px;
+  height: 16px;
+  margin: 10px;
 }
 
 .termkitCommand > span.sigil-error {
-  display: inline-block;
+  background: #000 url('Images/fail.png');
   width: 16px;
   height: 16px;
-  background: #000 url('Images/fail.png');
-  margin-top: -2px;
+  margin: 10px;
 }
 
-.termkitCommand .termkitSpinner {
+.termkitCommand .termkitSpinner, .termkitCommand > span.sigil-ok, .termkitCommand > span.sigil-error, .termkitCommand > span.sigil-waiting {
   position: absolute;
   left: -2px;
   top: -1px;

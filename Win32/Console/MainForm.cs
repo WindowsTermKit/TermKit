@@ -17,6 +17,10 @@ namespace Console
         {
             InitializeComponent();
 
+            // Set the user agent to "TermKit/0.3" so that the index.html
+            // document knows to write out the <base> element.
+            this.c_WebKit.UserAgent = this.c_WebKit.UserAgent.Replace("Mozilla/5.0", "TermKit/0.3");
+
             // Set the initial document content for the TermKit window.
             this.c_WebKit.Navigate("application:///index.html");
         }

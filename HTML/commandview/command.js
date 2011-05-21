@@ -73,9 +73,9 @@ cv.command.prototype = {
     var sigil = {
       'ok': '&nbsp;',
       'error': '&nbsp;',
-      'warning': '?',
+      'warning': '&nbsp;',
     }[this.state];
-    this.$sigil.attr('class', 'sigil sigil-'+this.state).html(this.collapsed ? '?' : sigil);
+    this.$sigil.attr('class', 'sigil sigil-'+this.state).html(this.collapsed ? '&nbsp;' : sigil);
 
     this.spinner.$element[(this.state == 'running') ? 'show' : 'hide']();
 

@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<base href="application:///" />
+    <script>
+        // Hack for native clients.
+        if (navigator.userAgent.substring(0, "TermKit/".length) == "TermKit/")
+            document.write('<base href="application:///" />');
+    </script>
 	<title>TermKit - UI prototype</title>
 
   <script type="text/javascript" charset="utf-8" src="jquery.js"></script>

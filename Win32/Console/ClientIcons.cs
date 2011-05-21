@@ -26,7 +26,7 @@ namespace Console
                 string ext = Path.GetExtension(path);
 
                 // Find out the image identifier from the Windows registry.
-                RegistryKey handler = Registry.ClassesRoot.OpenSubKey("." + ext);
+                RegistryKey handler = Registry.ClassesRoot.OpenSubKey(ext);
                 iconid = (string)handler.GetValue("");
             }
 
