@@ -15,6 +15,9 @@ cv.commandContext = function (shell) {
 
   this.path = shell.environment.cwd;
   this.user = shell.environment.user;
+  
+  if (this.path.substring(0, "/cygdrive/".length) == "/cygdrive/")
+    this.path = this.path.substring(10)[0].toUpperCase() + ":" + this.path.substring(11);
 };
 
 cv.commandContext.prototype = {
@@ -30,8 +33,19 @@ cv.commandContext.prototype = {
     this.$element.data('controller', this);
 
     var path = escapeText(this.path || '').split('/');
-    path.shift();
-    this.$path.html('<span>' + path.join('</span><span>') + '</span>');
+    if (this.path[0] == '/')
+    {
+        // UNIX
+        path.shift();
+        this.$path.html('<span>' + path.join('</span><span>') + '</span>');
+    }
+    else
+    {
+        // WIN32
+        if (path.length == 1)
+            path[1] = ""; // Force a final / to appear when in root drive.
+        this.$path.html('<span class="windows">' + path.join('</span><span>') + '</span>');
+    }
     this.$user.html(escapeText(this.user || ''));
   },
   

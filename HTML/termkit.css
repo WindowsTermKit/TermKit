@@ -152,6 +152,11 @@ body {
   color: #99c;
 }
 
+.termkitCommandView .context .path span.windows::before {
+  padding-right: 0em;
+  content: '';
+}
+
 .termkitCommandView .context .user {
   float: right;
 }
