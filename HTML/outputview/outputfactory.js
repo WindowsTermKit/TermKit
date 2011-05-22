@@ -24,7 +24,8 @@ ov.outputFactory.prototype = {
 
     if (node.properties.children) {
       var nodes = node.properties.children.map(function (node) {
-        return that.construct(node);
+	    if (node != null) // FIXME: Occasionally the server sends us a null node.
+			return that.construct(node);
       });
       delete node.properties.children;
       node.add(nodes);

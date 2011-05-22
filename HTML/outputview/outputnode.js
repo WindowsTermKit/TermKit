@@ -70,6 +70,15 @@ ov.outputNode.prototype = {
       pointer = this.children.length;
     }
     var args = [ pointer, 0 ].concat(collection);
+    
+    // FIXME: Occasionally the server sends us undefined nodes in a collection.
+    var nCollection = [ ];
+    $.each(oneOrMany(collection), function () {
+      if (this == window)
+        return;
+      nCollection[nCollection.length] = this;
+    });
+    collection = nCollection;
 
     // Allow both single object and array.
     $.each(oneOrMany(collection), function () {
