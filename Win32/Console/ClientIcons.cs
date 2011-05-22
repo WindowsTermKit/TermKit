@@ -18,20 +18,63 @@ namespace Console
         {
             string iconid = null;
 
-            if (Directory.Exists(path))
-                iconid = "Folder";
-            else
+            try
             {
-                // Get the extension of the path.
-                string ext = Path.GetExtension(path);
+                if (Directory.Exists(path))
+                    iconid = "Folder";
+                else
+                {
+                    // Get the extension of the path.
+                    string ext = Path.GetExtension(path);
 
-                // Find out the image identifier from the Windows registry.
-                RegistryKey handler = Registry.ClassesRoot.OpenSubKey(ext);
-                iconid = (string)handler.GetValue("");
+                    // Find out the image identifier from the Windows registry.
+                    RegistryKey handler = Registry.ClassesRoot.OpenSubKey(ext);
+                    iconid = (string)handler.GetValue("");
+                    if (iconid == null)
+                        return ClientResources.GetResourceData("Images/file_big.png");
+                }
+
+                // Get the actual icon from the registry.
+                return ClientIcons.GetIconByRegistryID(iconid);
             }
+            catch (NullReferenceException e)
+            {
+                return ClientResources.GetResourceData("Images/file_big.png");
+            }
+        }
 
+        public static byte[] GetDefaultIcon(string ext)
+        {
+            string iconid = null;
+
+            try
+            {
+                if (ext == "...")
+                    iconid = "Folder";
+                else
+                {
+                    // Find out the image identifier from the Windows registry.
+                    RegistryKey handler = Registry.ClassesRoot.OpenSubKey("." + ext);
+                    iconid = (string)handler.GetValue("");
+                    if (iconid == null)
+                        return ClientResources.GetResourceData("Images/file_big.png");
+                }
+
+                // Get the actual icon from the registry.
+                return ClientIcons.GetIconByRegistryID(iconid);
+            }
+            catch (NullReferenceException e)
+            {
+                return ClientResources.GetResourceData("Images/file_big.png");
+            }
+        }
+
+        private static byte[] GetIconByRegistryID(string iconid)
+        {
             // Now find the actual path to the image.
             string[] s = ((string)Registry.ClassesRoot.OpenSubKey(iconid).OpenSubKey("DefaultIcon").GetValue("")).Split(new char[] { ',' });
+            if (s[0] == "%1") { s = new string[] { "%SystemRoot%\\system32\\shell32.dll", "2" }; }
+            else if (s.Length == 1) { s = new string[] { s[0], "0" }; }
             string iconpath = s[0];
             int iconindex = Convert.ToInt32(s[1]);
 
@@ -45,37 +88,6 @@ namespace Console
             b.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
             ms.Seek(0, SeekOrigin.Begin);
             return ms.ToArray();
-        }
-
-        public static byte[] GetDefaultIcon(string ext)
-        {
-            if (ext == "...")
-            {
-                // Unknown file extension.
-                return ClientResources.GetResourceData("Images/file.png");
-            }
-            else
-            {
-                // File extension was provided.
-                RegistryKey handler = Registry.ClassesRoot.OpenSubKey(ext);
-                string iconid = (string)handler.GetValue("");
-
-                // Now find the actual path to the image.
-                string[] s = ((string)Registry.ClassesRoot.OpenSubKey(iconid).OpenSubKey("DefaultIcon").GetValue("")).Split(new char[] { ',' });
-                string iconpath = s[0];
-                int iconindex = Convert.ToInt32(s[1]);
-
-                // Now get the icon.
-                IntPtr ptr = ClientIcons.ExtractIcon(0, iconpath, iconindex);
-                Icon ico = Icon.FromHandle(ptr);
-
-                // Translate the icon data into PNG.
-                Bitmap b = ico.ToBitmap();
-                MemoryStream ms = new MemoryStream();
-                b.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
-                ms.Seek(0, SeekOrigin.Begin);
-                return ms.ToArray();
-            }
         }
     }
 }
