@@ -7,58 +7,254 @@
         if (navigator.userAgent.substring(0, "TermKit/".length) == "TermKit/")
             document.write('<base href="application:///" />');
     </script>
-	<title>TermKit - UI prototype</title>
+	<title>TermKit for Windows</title>
+    <link rel="stylesheet" href="termkit.css" type="text/css" media="screen" title="no title" charset="utf-8" />
+    <link rel="stylesheet" href="typography.css" type="text/css" media="screen" title="no title" charset="utf-8" />
+    <link type="text/css" href="external/jquery-ui/css/ui-darkness/jquery-ui-1.8.12.custom.css" rel="Stylesheet" />	
+    <link href="external/syntaxhighlighter_3.0.83/styles/shCore.css" rel="stylesheet" type="text/css" />
+    <link href="external/syntaxhighlighter_3.0.83/styles/shThemeFadeToGrey.css" rel="stylesheet" type="text/css" />
 
-  <script type="text/javascript" charset="utf-8" src="jquery.js"></script>
-  <script type="text/javascript" charset="utf-8" src="socket.io/socket.io.js"></script>
-  <script type="text/javascript" charset="utf-8" src="termkit.js"></script>
-
-  <script type="text/javascript" charset="utf-8" src="container.js"></script>
-
-  <script type="text/javascript" charset="utf-8" src="shared/protocol.js"></script>
-  <script type="text/javascript" charset="utf-8" src="client/client.js"></script>
-  <script type="text/javascript" charset="utf-8" src="client/shell.js"></script>
-
-  <script type="text/javascript" charset="utf-8" src="indicators/progress.js"></script>
-  <script type="text/javascript" charset="utf-8" src="indicators/spinner.js"></script>
-
-  <script type="text/javascript" charset="utf-8" src="tokenfield/tokenfield.js"></script>
-  <script type="text/javascript" charset="utf-8" src="tokenfield/selection.js"></script>
-  <script type="text/javascript" charset="utf-8" src="tokenfield/caret.js"></script>
-  <script type="text/javascript" charset="utf-8" src="tokenfield/token.js"></script>
-  <script type="text/javascript" charset="utf-8" src="tokenfield/autocomplete.js"></script>
-
-  <script type="text/javascript" charset="utf-8" src="outputview/outputview.js"></script>
-  <script type="text/javascript" charset="utf-8" src="outputview/outputframe.js"></script>
-  <script type="text/javascript" charset="utf-8" src="outputview/outputnode.js"></script>
-  <script type="text/javascript" charset="utf-8" src="outputview/outputfactory.js"></script>
-
-  <script type="text/javascript" charset="utf-8" src="commandview/commandview.js"></script>
-  <script type="text/javascript" charset="utf-8" src="commandview/commandcontext.js"></script>
-  <script type="text/javascript" charset="utf-8" src="commandview/command.js"></script>
-
-  <link rel="stylesheet" href="termkit.css" type="text/css" media="screen" title="no title" charset="utf-8" />
-  <link rel="stylesheet" href="typography.css" type="text/css" media="screen" title="no title" charset="utf-8" />
-  
-  <link type="text/css" href="external/jquery-ui/css/ui-darkness/jquery-ui-1.8.12.custom.css" rel="Stylesheet" />	
-  <script type="text/javascript" src="external/jquery-ui/js/jquery-ui-1.8.12.custom.min.js"></script>
-
-  <!-- Syntax Highlighter -->
-  <script type="text/javascript" src="external/syntaxhighlighter_3.0.83/scripts/shCore.js"></script>
-  <script type="text/javascript" charset="utf-8" src="syntax.js"></script>
-  <link href="external/syntaxhighlighter_3.0.83/styles/shCore.css" rel="stylesheet" type="text/css" />
-  <link href="external/syntaxhighlighter_3.0.83/styles/shThemeFadeToGrey.css" rel="stylesheet" type="text/css" />
-
-  <style type="text/css" media="screen" id="dynamic-styles">
-  </style>
-
+    <!-- Dynamic Styles -->
+    <style type="text/css" media="screen" id="dynamic-styles">
+    </style>
 </head>
-
 <body>
+    <div id="terminal">
+        <div class="termkitCommandView">
+            <div class="commands" id="dl_commands">
+                <div class="termkitCommand command-running command-collapsed" id="dl_initcmd_init">
+                    <span class="sigil sigil-running">&nbsp;</span>
+                    <div class="termkitTokenField">
+                        <span class="token token-plain">
+                            <span class="contents">Initalizing dynamic load system... (if you see this it probably isn't working)</span>
+                        </span>
+                    </div>
+                    <div class="termkitSpinner" style="display: none; "></div>
+                    <div class="termkitOutputFrame" style="display: none; "></div>
+                </div>
+            </div>
+            <div class="context">
+                <div class="termkitCommandContext">
+                    <div class="path">
+                        Please wait...
+                    </div>
+                    <div class="user"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<div id="terminal"></div>
-
-<div><iframe id="usage"></iframe></div>
-
+    <div>
+        <iframe id="usage"></iframe>
+    </div>
+    
+    <script type="text/javascript">
+    <!--
+    
+    // We delay load most resources so we can see the page correctly as soon as possible,
+    // with some indication to the user that useful things are actually happening during
+    // initalization (we also can't use jQuery here as it hasn't been loaded yet).
+    
+    var dl_CurrentID = "init";
+    var dl_CurrentNum = 0;
+    var dl_OKAY = 0;
+    var dl_RUNNING = 1;
+    var dl_FAILURE = 2;
+    var dl_JavascriptLibraries =
+        [
+            'jquery',
+            'socket.io/socket.io',
+            'termkit',
+            'container',
+            'shared/protocol',
+            'client/client',
+            'client/shell',
+            'indicators/progress',
+            'indicators/spinner',
+            'tokenfield/tokenfield',
+            'tokenfield/selection',
+            'tokenfield/caret',
+            'tokenfield/token',
+            'tokenfield/autocomplete',
+            'outputview/outputview',
+            'outputview/outputframe',
+            'outputview/outputnode',
+            'outputview/outputfactory',
+            'commandview/commandview',
+            'commandview/commandcontext',
+            'commandview/command',
+            'external/jquery-ui/js/jquery-ui-1.8.12.custom.min',
+            'external/syntaxhighlighter_3.0.83/scripts/shCore',
+            'syntax'
+        ];
+    
+    //
+    // Performs the delay loading.
+    //
+    function dl_Run()
+    {
+        dl_SetInitStatus(dl_CurrentID, "Initalized dynamic loading system.", dl_OKAY);
+        
+        // Load all required libraries.
+        dl_NextInitStatus("Loading required libraries ( 1 / " + dl_JavascriptLibraries.length + " ) " + dl_JavascriptLibraries[0] + "...");
+        dl_LoadNext(0);
+    }
+    
+    //
+    // Loads the next library in the list.
+    //
+    function dl_LoadNext(current)
+    {
+        if (current < dl_JavascriptLibraries.length)
+        {
+            // Load the script.
+            dl_SetInitStatus(dl_CurrentID, "Loading required libraries ( " + (current + 1) + " / " + dl_JavascriptLibraries.length + " ) " + dl_JavascriptLibraries[current] + "...", dl_RUNNING);
+            dl_InsertScript(dl_JavascriptLibraries[current] + ".js", function() { dl_LoadNext(current + 1); });
+        }
+        else
+        {
+            dl_LoadComplete();
+        }
+    }
+    
+    //
+    // Indicates the load has completed and starts the console.
+    //
+    function dl_LoadComplete()
+    {
+        dl_SetInitStatus(dl_CurrentID, "Loaded all required JavaScript libraries.", dl_OKAY);
+        
+        // Start console.
+        dl_NextInitStatus("Establishing connection to localhost:2222...");
+        jQuery.ready()
+    }
+    
+    //
+    // Dynamically insert a script.
+    // Based of: http://unixpapa.com/js/dyna.html
+    //
+    function dl_InsertScript(path, oncomplete)
+    {
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.onreadystatechange = function()
+        {
+            if (this.readyState == 'complete') oncomplete();
+        }
+        script.onload = oncomplete;
+        script.src = path;
+        head.appendChild(script);
+    }
+    
+    //
+    // Creates a new initialization line and updates the dl_CurrentID as needed.
+    //
+    function dl_NextInitStatus(text)
+    {
+        dl_CurrentNum += 1;
+        dl_NewInitStatus(dl_CurrentNum + 1 + "", text);
+        dl_CurrentID = dl_CurrentNum + 1 + "";
+    }
+    
+    //
+    // Sets the current initialization line's status to OKAY.
+    //
+    function dl_OkayInitStatus()
+    {
+        dl_SetInitStatus(dl_CurrentID, null, dl_OKAY);
+    }
+    
+    //
+    // Sets the current initialization line's status to FAIL.
+    //
+    function dl_FailInitStatus()
+    {
+        dl_SetInitStatus(dl_CurrentID, null, dl_FAIL);
+    }
+    
+    //
+    // Creates a new initialization line with the specified ID.
+    //
+    function dl_NewInitStatus(id, text)
+    {
+        var n = document.createElement("div");
+        n.id = "dl_initcmd_" + id;
+        n.className = "termkitCommand command-running command-collapsed";
+        var html     = '<span class="sigil sigil-running">&nbsp;</span>';
+            html    += '<div class="termkitTokenField">';
+            html    += '    <span class="token token-plain">' + text + '</span>';
+            html    += '</div>';
+            html    += '<div class="termkitSpinner" style="display: none; "></div>';
+            html    += '<div class="termkitOutputFrame" style="display: none; "></div>';
+        n.innerHTML = html;
+        document.getElementById("dl_commands").appendChild(n);
+    }
+    
+    //
+    // Sets the text and status for the initialization line with the specified ID.
+    //
+    function dl_SetInitStatus(id, text, status)
+    {
+        var ss = dl_getElementsByClass("termkitSpinner", document.getElementById("dl_initcmd_" + id))[0];
+        ss.style.display = 'none';
+        var s = dl_getElementsByClass("sigil", document.getElementById("dl_initcmd_" + id))[0];
+        if (status == dl_OKAY)
+            s.className = "sigil sigil-ok";
+        else if (status == dl_RUNNING)
+        {
+            s.className = "sigil sigil-running";
+            ss.style.display = 'block';
+        }
+        else if (status == dl_FAILURE)
+            s.className = "sigil sigil-fail";
+        if (text != null)
+        {
+            var c = dl_getElementsByClass("token", document.getElementById("dl_initcmd_" + id))[0];
+            c.innerText = text;
+        }
+    }
+    
+    //
+    // Replacement function for getElementsByClass.
+    // Source: http://www.drunkenfist.com/304/2008/07/16/my-new-getelementsbyclass-a-safari-31-oddity/
+    //
+    function dl_getElementsByClass(theClass,node)
+    {
+        var classElements = [];
+        var i;
+        if ( node == null )
+        {
+            node = document
+        }
+        if (node.getElementsByClassName)
+        {
+            var tempCollection = node.getElementsByClassName(theClass);
+            for (i = 0; i < tempCollection.length ; i++)
+            {
+                classElements.push(tempCollection[i])
+            }
+        }
+        else
+        {
+            var els = node.getElementsByTagName("*");
+            var elsLen = els.length;
+            var pattern = new RegExp("(^|\\s)"+theClass+"(\\s|$)");
+            for (i = 0; i < elsLen; i++)
+            {
+                if ( pattern.test(els[i].className) )
+                {
+                    classElements.push(els[i]);
+                }
+            }
+        }
+        return classElements;
+    };
+    
+    // Now do it!
+    dl_Run();
+    
+    -->
+    </script>
 </body>
 </html>

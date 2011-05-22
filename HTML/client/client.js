@@ -19,10 +19,18 @@ var tc = termkit.client = function () {
   // Use shared protocol handler with back-end.
   this.protocol = new termkit.protocol(this.socket, this);
   s.on('connect', function () {
+    // Inform the dynamic load that we're connected.
+    dl_SetInitStatus("3", "Established connection to server on localhost:2222.", dl_OKAY);
+    if (dl_CurrentID != "4")
+        dl_NextInitStatus("Starting console...");
+  
     // TODO: Handshake
     that.onConnect();
   }); 
   s.on('disconnect', function() {
+    // Inform the dynamic load that we're reconnecting.
+    dl_SetInitStatus("3", "Re-establishing connection to localhost:2222...", dl_RUNNING);
+    
     that.onDisconnect();
   });
   

@@ -80,7 +80,8 @@ tf.autocomplete.prototype = {
       // Highlight active line, if any,
       if (that.items.length) {
         // Remove token badge.
-        that.token.style = '';
+        if (that.token != null)
+            that.token.style = '';
 
         // Insert lines into box.
         var prefix = that.prefix;

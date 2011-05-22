@@ -13,6 +13,7 @@ $(document).ready(function () {
       var view = new termkit.commandView(shell);
       $('#terminal').append(view.$element);
       view.newCommand();
+      dl_SetInitStatus(dl_CurrentID, "Console started.", dl_OKAY);
     });    
   };
 
