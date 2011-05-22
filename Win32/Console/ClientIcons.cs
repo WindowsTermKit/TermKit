@@ -47,9 +47,35 @@ namespace Console
             return ms.ToArray();
         }
 
-        public static byte[] GetDefaultIcon()
+        public static byte[] GetDefaultIcon(string ext)
         {
-            return ClientResources.GetResourceData("Images/file.png");
+            if (ext == "...")
+            {
+                // Unknown file extension.
+                return ClientResources.GetResourceData("Images/file.png");
+            }
+            else
+            {
+                // File extension was provided.
+                RegistryKey handler = Registry.ClassesRoot.OpenSubKey(ext);
+                string iconid = (string)handler.GetValue("");
+
+                // Now find the actual path to the image.
+                string[] s = ((string)Registry.ClassesRoot.OpenSubKey(iconid).OpenSubKey("DefaultIcon").GetValue("")).Split(new char[] { ',' });
+                string iconpath = s[0];
+                int iconindex = Convert.ToInt32(s[1]);
+
+                // Now get the icon.
+                IntPtr ptr = ClientIcons.ExtractIcon(0, iconpath, iconindex);
+                Icon ico = Icon.FromHandle(ptr);
+
+                // Translate the icon data into PNG.
+                Bitmap b = ico.ToBitmap();
+                MemoryStream ms = new MemoryStream();
+                b.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                ms.Seek(0, SeekOrigin.Begin);
+                return ms.ToArray();
+            }
         }
     }
 }

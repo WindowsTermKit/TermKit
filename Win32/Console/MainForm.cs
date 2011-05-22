@@ -44,7 +44,7 @@ namespace Console
                     return;
                 case "termkit-icon-default:///":
                     e.Response.Override = true;
-                    e.Response.ContentData = ClientIcons.GetDefaultIcon();
+                    e.Response.ContentData = ClientIcons.GetDefaultIcon(uri.AbsolutePath);
                     e.Response.ContentType = "image/png";
                     return;
                 case "termkit-icon-preview:///":
