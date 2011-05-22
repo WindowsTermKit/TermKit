@@ -20,6 +20,7 @@ namespace Console
             BinaryReader reader = new BinaryReader(File.Open("../../../../../HTML/" + path, FileMode.Open));
             // TODO: Using an integer for length means we can't read big files...
             byte[] data = reader.ReadBytes((int)reader.BaseStream.Length);
+            reader.Close();
             return data;
             /*
 
@@ -37,6 +38,7 @@ namespace Console
 
         public static string GetResourceType(string path)
         {
+            if (path.LastIndexOf('.') == -1) return "text/plain";
             switch (path.Substring(path.LastIndexOf('.')))
             {
                 case ".js": return "text/javascript";

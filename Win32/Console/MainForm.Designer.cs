@@ -29,32 +29,13 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.c_WebKit = new WebKit.WebKitBrowser();
             this.SuspendLayout();
-            // 
-            // c_WebKit
-            // 
-            this.c_WebKit.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
-            this.c_WebKit.BackColor = System.Drawing.Color.Black;
-            this.c_WebKit.Location = new System.Drawing.Point(0, 0);
-            this.c_WebKit.Name = "c_WebKit";
-            this.c_WebKit.Size = new System.Drawing.Size(806, 495);
-            this.c_WebKit.TabIndex = 0;
-            this.c_WebKit.Url = null;
-            this.c_WebKit.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.c_WebKit_Navigating);
-            this.c_WebKit.ShowJavaScriptConfirmPanel += new WebKit.ShowJavaScriptConfirmPanelEventHandler(this.c_WebKit_ShowJavaScriptConfirmPanel);
-            this.c_WebKit.ShowJavaScriptPromptPanel += new WebKit.ShowJavaScriptPromptPanelEventHandler(this.c_WebKit_ShowJavaScriptPromptPanel);
-            this.c_WebKit.ShowJavaScriptAlertPanel += new WebKit.ShowJavaScriptAlertPanelEventHandler(this.c_WebKit_ShowJavaScriptAlertPanel);
-            this.c_WebKit.ResourceRequested += new WebKit.ResourceRequestedEventHandler(this.c_WebKit_ResourceRequested);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(805, 494);
-            this.Controls.Add(this.c_WebKit);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.Text = "TermKit (running on Windows 7 x86-mode)";
@@ -63,10 +44,6 @@
         }
 
         #endregion
-
-        private WebKit.WebKitBrowser c_WebKit;
-
-
 
     }
 }

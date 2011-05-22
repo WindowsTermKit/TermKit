@@ -52,6 +52,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>.\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="nunit.framework, Version=2.5.7.10213, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\libs\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -70,6 +74,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Protocols\ApplicationProtocol.cs" />
     <Compile Include="ClientIcons.cs" />
     <Compile Include="ClientResources.cs" />
     <Compile Include="MainForm.cs">
@@ -103,22 +108,19 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Protocols\ApplicationProtocolFactory.cs" />
+    <Compile Include="Protocols\TermKitIconPreviewProtocolFactory.cs" />
+    <Compile Include="Protocols\TermKitIconPreviewProtocol.cs" />
+    <Compile Include="Protocols\TermKitIconDefaultProtocol.cs" />
+    <Compile Include="Protocols\TermKitIconDefaultProtocolFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WebKit.NET\JSCore\JSCore.vcproj">
-      <Project>{287EEE45-1390-44D5-982F-0B96D4A077DA}</Project>
-      <Name>JSCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebKit.NET\WebKitBrowser\WebKitBrowser.csproj">
-      <Project>{44AFE214-12C7-4280-898D-A7C4AABF1533}</Project>
-      <Name>WebKitBrowser</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebKit.NET\WebKitCore\WebKitCore.csproj">
-      <Project>{D1C8CE15-4279-45DA-989A-54561E0FD842}</Project>
-      <Name>WebKitCore</Name>
+    <ProjectReference Include="..\CefSharp\CefSharp.vcproj">
+      <Project>{7B495581-2271-4F41-9476-ACB86E8C864F}</Project>
+      <Name>CefSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -6,68 +6,43 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using WebKit.JSCore;
 using System.Web;
+using CefSharp;
+using Console.Protocols;
+using System.Diagnostics;
 
 namespace Console
 {
-    public partial class MainForm : Form
+    public partial class MainForm : Form, IBeforeResourceLoad
     {
+        private CefWebBrowser c_WebBrowser = null;
+
         public MainForm()
         {
             InitializeComponent();
 
-            // Set the user agent to "TermKit/0.3" so that the index.html
-            // document knows to write out the <base> element.
-            this.c_WebKit.UserAgent = this.c_WebKit.UserAgent.Replace("Mozilla/5.0", "TermKit/0.3");
+            // Create the new CefWebBrowser control.
+            this.c_WebBrowser = new CefWebBrowser("application://termkit/index.html");
+            this.c_WebBrowser.Dock = DockStyle.Fill;
+            this.c_WebBrowser.Visible = true;
+            this.c_WebBrowser.BeforeResourceLoadHandler = this;
+            this.c_WebBrowser.ConsoleMessage += new ConsoleMessageEventHandler(c_WebBrowser_ConsoleMessage);
+            this.Controls.Add(this.c_WebBrowser);
 
-            // Set the initial document content for the TermKit window.
-            this.c_WebKit.Navigate("application:///index.html");
+            // Register the schemes.
+            CEF.RegisterScheme("application", new ApplicationProtocolFactory());
+            CEF.RegisterScheme("termkit-icon-preview", new TermKitIconPreviewProtocolFactory());
+            CEF.RegisterScheme("termkit-icon-default", new TermKitIconDefaultProtocolFactory());
         }
 
-        private void c_WebKit_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        void c_WebBrowser_ConsoleMessage(object sender, ConsoleMessageEventArgs e)
         {
-            return;
+            System.Diagnostics.Debugger.Log(1, "Console", e.Source + ":" + e.Line + " - " + e.Message + "\r\n");
         }
 
-        private void c_WebKit_ResourceRequested(object sender, WebKit.ResourceRequestedEventArgs e)
+        public void HandleBeforeResourceLoad(CefWebBrowser browserControl, IRequestResponse requestResponse)
         {
-            System.Diagnostics.Debugger.Log(1, "Resource", "The resource " + e.Request + " was requested.\r\n");
-            Uri uri = new Uri(e.Request);
-
-            switch (uri.Scheme + ":///")
-            {
-                case "application:///":
-                    e.Response.Override = true;
-                    e.Response.ContentData = ClientResources.GetResourceData(uri.AbsolutePath);
-                    e.Response.ContentType = ClientResources.GetResourceType(uri.AbsolutePath);
-                    return;
-                case "termkit-icon-default:///":
-                    e.Response.Override = true;
-                    e.Response.ContentData = ClientIcons.GetDefaultIcon(uri.AbsolutePath);
-                    e.Response.ContentType = "image/png";
-                    return;
-                case "termkit-icon-preview:///":
-                    e.Response.Override = true;
-                    e.Response.ContentData = ClientIcons.GetPathIcon(HttpUtility.UrlDecode(uri.AbsolutePath).Substring(1));
-                    e.Response.ContentType = "image/png";
-                    return;
-            }
-        }
-
-        private void c_WebKit_ShowJavaScriptAlertPanel(object sender, WebKit.ShowJavaScriptAlertPanelEventArgs e)
-        {
-            MessageBox.Show(e.Message, "Javascript");
-        }
-
-        private void c_WebKit_ShowJavaScriptConfirmPanel(object sender, WebKit.ShowJavaScriptConfirmPanelEventArgs e)
-        {
-            e.ReturnValue = (MessageBox.Show(e.Message, "Javascript", MessageBoxButtons.YesNo) == DialogResult.Yes);
-        }
-
-        private void c_WebKit_ShowJavaScriptPromptPanel(object sender, WebKit.ShowJavaScriptPromptPanelEventArgs e)
-        {
-            MessageBox.Show("Prompt requested!", "Javascript");
+            System.Diagnostics.Debugger.Log(1, "Resource", "The resource " + requestResponse.Request.Url + " was requested.\r\n");
         }
     }
 }
