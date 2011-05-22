@@ -14,7 +14,7 @@ var tc = termkit.client = function () {
   this.onDisconnect = function () {};
 
   // Set up socket with back-end.
-  var s = this.socket = new io.Socket('localhost', { port: 2222, rememberTransport: false, transports: ['flashsocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'] }); 
+  var s = this.socket = new io.Socket('localhost', { port: 2222, transports: ['websocket', 'flashsocket', 'htmlfile', 'xhr-multipart', 'xhr-polling', 'jsonp-polling'] }); 
   
   // Use shared protocol handler with back-end.
   this.protocol = new termkit.protocol(this.socket, this);
