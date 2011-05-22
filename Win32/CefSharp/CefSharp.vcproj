@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\bin\$(ConfigurationName)\$(PlatformName)"
+			IntermediateDirectory="$(ProjectDir)\obj\$(ConfigurationName)\$(PlatformName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SolutionDir)include"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="_DEBUG;_WIN32_WINNT=0x0600;WINVER=0x0600;WIN32;_WINDOWS;WIN32_LEAN_AND_MEAN;USING_CEF_SHARED;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="2"
@@ -66,7 +66,7 @@
 				AdditionalDependencies="opengl32.lib glu32.lib libcef.lib libcef_dll_wrapper.lib"
 				ShowProgress="1"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(SolutionDir)libs\$(ConfigurationName)\"
+				AdditionalLibraryDirectories="$(ProjectDir)libs\$(ConfigurationName)\"
 				IgnoreAllDefaultLibraries="false"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="true"
@@ -94,12 +94,13 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy /Y /V &quot;$(ProjectDir)libs\General\*.dll&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)\bin\$(ConfigurationName)\$(PlatformName)"
+			IntermediateDirectory="$(ProjectDir)\obj\$(ConfigurationName)\$(PlatformName)"
 			ConfigurationType="2"
 			CharacterSet="1"
 			ManagedExtensions="1"
@@ -122,7 +123,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(SolutionDir)include"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;"
 				PreprocessorDefinitions="_NDEBUG;_WIN32_WINNT=0x0600;WINVER=0x0600;WIN32;_WINDOWS;WIN32_LEAN_AND_MEAN;USING_CEF_SHARED;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -143,7 +144,7 @@
 				AdditionalDependencies="opengl32.lib glu32.lib libcef.lib libcef_dll_wrapper.lib"
 				ShowProgress="1"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="$(SolutionDir)libs\$(ConfigurationName)\"
+				AdditionalLibraryDirectories="$(ProjectDir)libs\$(ConfigurationName)\"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -167,6 +168,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="xcopy /Y /V &quot;$(ProjectDir)libs\General\*.dll&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
