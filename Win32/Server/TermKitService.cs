@@ -11,8 +11,6 @@ namespace Server
 {
     public partial class TermKitService : ServiceBase
     {
-        private ConsoleWebServer m_FileServer = null;
-
         public TermKitService()
         {
             InitializeComponent();
@@ -20,17 +18,10 @@ namespace Server
 
         protected override void OnStart(string[] args)
         {
-            if (this.m_FileServer == null)
-                this.m_FileServer = new ConsoleWebServer();
         }
 
         protected override void OnStop()
         {
-            if (this.m_FileServer != null)
-            {
-                this.m_FileServer.Stop();
-                this.m_FileServer = null;
-            }
         }
     }
 }
