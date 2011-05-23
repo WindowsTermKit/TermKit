@@ -73,6 +73,7 @@ namespace Console
         {
             // Now find the actual path to the image.
             string[] s = ((string)Registry.ClassesRoot.OpenSubKey(iconid).OpenSubKey("DefaultIcon").GetValue("")).Split(new char[] { ',' });
+            s[0] = s[0].Trim('"');
             if (s[0] == "%1") { s = new string[] { "%SystemRoot%\\system32\\shell32.dll", "2" }; }
             else if (s.Length == 1) { s = new string[] { s[0], "0" }; }
             string iconpath = s[0];

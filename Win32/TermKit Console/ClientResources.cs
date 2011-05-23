@@ -17,7 +17,7 @@ namespace Console
             System.Diagnostics.Debugger.Log(1, "Resource", "The resource application://" + path + " was loaded (as " + ClientResources.GetResourceType(path) + ").\r\n");
 
             // Read the file as binary data.
-            BinaryReader reader = new BinaryReader(File.Open("../../../../../HTML/" + path, FileMode.Open));
+            BinaryReader reader = new BinaryReader(File.Open("../../../../HTML/" + path, FileMode.Open));
             // TODO: Using an integer for length means we can't read big files...
             byte[] data = reader.ReadBytes((int)reader.BaseStream.Length);
             reader.Close();
