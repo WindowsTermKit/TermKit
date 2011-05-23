@@ -1,7 +1,8 @@
 syntax: glob
 */bin/*
 */obj/*
-Win32/WebKit.NET/JSCore/Debug/*
 *.ncb
 *.suo
 *.git*
+Win32/CefSharp/Debug/*
+Win32/CefSharp/Release/*
