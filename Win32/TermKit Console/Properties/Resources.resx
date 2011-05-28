@@ -117,27 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="HTMLInitializing" xml:space="preserve">
-    <value>&lt;html lang="en"&gt;
-&lt;head&gt;
-&lt;meta charset="utf-8"&gt;
-&lt;title&gt;TermKit - Initalizing...&lt;/title&gt;
-&lt;link rel="stylesheet" href="chrome://test/path/termkit.css" type="text/css" media="screen" title="no title" charset="utf-8"&gt;
-&lt;link rel="stylesheet" href="chrome://test/path/typography.css" type="text/css" media="screen" title="no title" charset="utf-8"&gt;
-&lt;/head&gt;
-&lt;body&gt;
-&lt;div id="terminal"&gt;
-&lt;div class="termkitCommandView"&gt;
-&lt;div class="context"&gt;
-&lt;div class="termkitCommandContext"&gt;
-&lt;div class="path"&gt;Initializing console...&lt;/div&gt;
-&lt;div class="user"&gt;jrhodes@REDPOINT.INT&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/body&gt;
-&lt;/html&gt;</value>
-    <comment>Default HTML text for when the console is initalizing.</comment>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="ClientData" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>HTML.zip;System.Byte[], mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

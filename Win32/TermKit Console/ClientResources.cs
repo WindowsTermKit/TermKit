@@ -10,30 +10,37 @@ namespace Console
 {
     public static class ClientResources
     {
-        //private static ZipFile m_ClientZIP = new ZipFile(new MemoryStream(Properties.Resources.ClientData));
+        private static ZipFile m_ClientZIP = new ZipFile(new MemoryStream(Properties.Resources.ClientData));
 
         public static byte[] GetResourceData(string path)
         {
-            System.Diagnostics.Debugger.Log(1, "Resource", "The resource application://" + path + " was loaded (as " + ClientResources.GetResourceType(path) + ").\r\n");
+            if (File.Exists("../../../../HTML/" + path))
+            {
+                System.Diagnostics.Debugger.Log(1, "Resource", "The resource application://termkit" + path + " was loaded from disk (as " + ClientResources.GetResourceType(path) + ").\r\n");
 
-            // Read the file as binary data.
-            BinaryReader reader = new BinaryReader(File.Open("../../../../HTML/" + path, FileMode.Open));
-            // TODO: Using an integer for length means we can't read big files...
-            byte[] data = reader.ReadBytes((int)reader.BaseStream.Length);
-            reader.Close();
-            return data;
-            /*
+                // Use the most up-to-date version of the file.
+                BinaryReader reader = new BinaryReader(File.Open("../../../../HTML/" + path, FileMode.Open));
+                List<byte> data = new List<byte>();
+                while (reader.BaseStream.Position != reader.BaseStream.Length)
+                    data.Add(reader.ReadByte());
+                return data.ToArray();
+            }
+            else
+            {
+                System.Diagnostics.Debugger.Log(1, "Resource", "The resource application://termkit" + path + " was loaded from ZIP (as " + ClientResources.GetResourceType(path) + ").\r\n");
 
-            ZipEntry entry = ClientResources.m_ClientZIP.GetEntry(path);
-            if (entry == null)
-                return "";
+                // Read the resources from the ZIP file.
+                ZipEntry entry = ClientResources.m_ClientZIP.GetEntry(ZipEntry.CleanName(path));
+                if (entry == null)
+                    return new byte[] { };
 
-            Stream stream = ClientResources.m_ClientZIP.GetInputStream(entry);
-            int buffer = -1;
-            string data = "";
-            while ((buffer = stream.ReadByte()) != -1)
-                data += Convert.ToChar(buffer);
-            return data;*/
+                Stream stream = ClientResources.m_ClientZIP.GetInputStream(entry);
+                int buffer = -1;
+                List<byte> data = new List<byte>();
+                while ((buffer = stream.ReadByte()) != -1)
+                    data.Add((byte)buffer);
+                return data.ToArray();
+            }
         }
 
         public static string GetResourceType(string path)

@@ -60,24 +60,10 @@ namespace Console.Properties {
             }
         }
         
-        /// <summary>
-        ///   Looks up a localized string similar to &lt;html lang=&quot;en&quot;&gt;
-        ///&lt;head&gt;
-        ///&lt;meta charset=&quot;utf-8&quot;&gt;
-        ///&lt;title&gt;TermKit - Initalizing...&lt;/title&gt;
-        ///&lt;link rel=&quot;stylesheet&quot; href=&quot;chrome://test/path/termkit.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot; title=&quot;no title&quot; charset=&quot;utf-8&quot;&gt;
-        ///&lt;link rel=&quot;stylesheet&quot; href=&quot;chrome://test/path/typography.css&quot; type=&quot;text/css&quot; media=&quot;screen&quot; title=&quot;no title&quot; charset=&quot;utf-8&quot;&gt;
-        ///&lt;/head&gt;
-        ///&lt;body&gt;
-        ///&lt;div id=&quot;terminal&quot;&gt;
-        ///&lt;div class=&quot;termkitCommandView&quot;&gt;
-        ///&lt;div class=&quot;context&quot;&gt;
-        ///&lt;div class=&quot;termkitCommandContext&quot;&gt;
-        ///&lt;div class=&quot;path&quot;&gt;Initializing c [rest of string was truncated]&quot;;.
-        /// </summary>
-        internal static string HTMLInitializing {
+        internal static byte[] ClientData {
             get {
-                return ResourceManager.GetString("HTMLInitializing", resourceCulture);
+                object obj = ResourceManager.GetObject("ClientData", resourceCulture);
+                return ((byte[])(obj));
             }
         }
     }
