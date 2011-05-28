@@ -23,6 +23,7 @@ namespace Console
                 List<byte> data = new List<byte>();
                 while (reader.BaseStream.Position != reader.BaseStream.Length)
                     data.Add(reader.ReadByte());
+                reader.Close();
                 return data.ToArray();
             }
             else
@@ -39,6 +40,7 @@ namespace Console
                 List<byte> data = new List<byte>();
                 while ((buffer = stream.ReadByte()) != -1)
                     data.Add((byte)buffer);
+                stream.Close();
                 return data.ToArray();
             }
         }
