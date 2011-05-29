@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TermKit Console", "TermKit 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TermKit Service", "TermKit Service\TermKit Service.csproj", "{C8D86A65-E66B-4BA7-82F6-6800E16A392C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Node.net", "Node.net\Node.net.csproj", "{CDDCE5CF-371B-4130-BA7C-BAE0A1334CA5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TermKit Local Server", "TermKit Local Server\TermKit Local Server.csproj", "{B10B9B23-543D-4F93-9423-D2A58A2C2A03}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "IronJS", "IronJS\Src\IronJS\IronJS.fsproj", "{213F177D-7E9B-4A60-811B-BC579660388B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -25,6 +31,18 @@ Global
 		{C8D86A65-E66B-4BA7-82F6-6800E16A392C}.Debug|x86.Build.0 = Debug|x86
 		{C8D86A65-E66B-4BA7-82F6-6800E16A392C}.Release|x86.ActiveCfg = Release|x86
 		{C8D86A65-E66B-4BA7-82F6-6800E16A392C}.Release|x86.Build.0 = Release|x86
+		{CDDCE5CF-371B-4130-BA7C-BAE0A1334CA5}.Debug|x86.ActiveCfg = Debug|x86
+		{CDDCE5CF-371B-4130-BA7C-BAE0A1334CA5}.Debug|x86.Build.0 = Debug|x86
+		{CDDCE5CF-371B-4130-BA7C-BAE0A1334CA5}.Release|x86.ActiveCfg = Release|x86
+		{CDDCE5CF-371B-4130-BA7C-BAE0A1334CA5}.Release|x86.Build.0 = Release|x86
+		{B10B9B23-543D-4F93-9423-D2A58A2C2A03}.Debug|x86.ActiveCfg = Debug|x86
+		{B10B9B23-543D-4F93-9423-D2A58A2C2A03}.Debug|x86.Build.0 = Debug|x86
+		{B10B9B23-543D-4F93-9423-D2A58A2C2A03}.Release|x86.ActiveCfg = Release|x86
+		{B10B9B23-543D-4F93-9423-D2A58A2C2A03}.Release|x86.Build.0 = Release|x86
+		{213F177D-7E9B-4A60-811B-BC579660388B}.Debug|x86.ActiveCfg = Debug|x86
+		{213F177D-7E9B-4A60-811B-BC579660388B}.Debug|x86.Build.0 = Debug|x86
+		{213F177D-7E9B-4A60-811B-BC579660388B}.Release|x86.ActiveCfg = Release|x86
+		{213F177D-7E9B-4A60-811B-BC579660388B}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
