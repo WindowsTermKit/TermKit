@@ -1,0 +1,6 @@
+You will need to create a new folder called IronJS and then clone:
+
+git+ssh://git@github.com:WindowsTermKit/IronJS.git
+
+to the folder.  You will then have the source code for building IronJS
+and have the required dependencies for building the rest of the solution.
