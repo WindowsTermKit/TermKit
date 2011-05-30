@@ -16,9 +16,6 @@ namespace Node.net.Modules
         public UtilModule(IronJS.Environment env)
             : base(env)
         {
-            this.Put("debug", Utils.createHostFunction<System.Func<string, CommonObject>>(env, this.debug));
-            this.Put("log", Utils.createHostFunction<System.Func<string, CommonObject>>(env, this.log));
-            this.Put("inspect", Utils.createHostFunction<System.Func<string, bool, int, CommonObject>>(env, this.inspect));
         }
 
         /// <summary>

@@ -94,7 +94,15 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoWrapObject.cs" />
     <Compile Include="Modules\DnsModule.cs" />
+    <Compile Include="Modules\ProcessModule.cs" />
+    <Compile Include="Modules\Streams\Base64Encoding.cs" />
+    <Compile Include="Modules\Streams\NodeReadableStream.cs" />
+    <Compile Include="Modules\Streams\NodeStream.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Modules\Process\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
