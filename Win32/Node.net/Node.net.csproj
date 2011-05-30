@@ -65,6 +65,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="HostEngine.cs" />
+    <Compile Include="HostModule.cs" />
+    <Compile Include="Modules\AssertModule.cs" />
+    <Compile Include="Modules\ChildProcessesModule.cs" />
+    <Compile Include="Modules\CryptoModule.cs" />
+    <Compile Include="Modules\DgramModule.cs" />
+    <Compile Include="Modules\EventsModule.cs" />
+    <Compile Include="Modules\FsModule.cs" />
+    <Compile Include="Modules\HttpModule.cs" />
+    <Compile Include="Modules\HttpsModule.cs" />
+    <Compile Include="Modules\NetModule.cs" />
+    <Compile Include="Modules\OsModule.cs" />
+    <Compile Include="Modules\PathModule.cs" />
+    <Compile Include="Modules\TlsModule.cs" />
+    <Compile Include="Modules\TtyModule.cs" />
+    <Compile Include="Modules\UrlModule.cs" />
+    <Compile Include="Modules\UtilModule.cs" />
+    <Compile Include="Modules\VmModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -75,6 +92,9 @@
       <Project>{213F177D-7E9B-4A60-811B-BC579660388B}</Project>
       <Name>IronJS</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Modules\DnsModule.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -12,6 +12,34 @@ namespace Node.net
     public class HostEngine
     {
         private CSharp.Context m_Context = null;
+        private Dictionary<string, HostModule> m_Modules = null;
+
+        public HostEngine()
+        {
+            // Set up the context.
+            this.m_Context = new CSharp.Context();
+            this.m_Context.CreatePrintFunction();
+
+            // Register all of the available modules.
+            this.m_Modules = new Dictionary<string, HostModule>();
+            this.m_Modules.Add("assert",            new Modules.AssertModule(this.m_Context.Environment));
+            this.m_Modules.Add("child_processes",   new Modules.ChildProcessesModule(this.m_Context.Environment));
+            this.m_Modules.Add("crypto",            new Modules.CryptoModule(this.m_Context.Environment));
+            this.m_Modules.Add("dgram",             new Modules.DgramModule(this.m_Context.Environment));
+            this.m_Modules.Add("dns",               new Modules.DnsModule(this.m_Context.Environment));
+            this.m_Modules.Add("events",            new Modules.EventsModule(this.m_Context.Environment));
+            this.m_Modules.Add("fs",                new Modules.FsModule(this.m_Context.Environment));
+            this.m_Modules.Add("http",              new Modules.HttpModule(this.m_Context.Environment));
+            this.m_Modules.Add("https",             new Modules.HttpsModule(this.m_Context.Environment));
+            this.m_Modules.Add("net",               new Modules.NetModule(this.m_Context.Environment));
+            this.m_Modules.Add("os",                new Modules.OsModule(this.m_Context.Environment));
+            this.m_Modules.Add("path",              new Modules.PathModule(this.m_Context.Environment));
+            this.m_Modules.Add("tls",               new Modules.TlsModule(this.m_Context.Environment));
+            this.m_Modules.Add("tty",               new Modules.TtyModule(this.m_Context.Environment));
+            this.m_Modules.Add("url",               new Modules.UrlModule(this.m_Context.Environment));
+            this.m_Modules.Add("util",              new Modules.UtilModule(this.m_Context.Environment));
+            this.m_Modules.Add("vm",                new Modules.VmModule(this.m_Context.Environment));
+        }
 
         /// <summary>
         /// Executes the given stream as a Javascript file under Node.js.
@@ -26,19 +54,15 @@ namespace Node.net
             while ((buffer = stream.ReadByte()) != -1)
                 bytes.Add((byte)buffer);
             string data = Encoding.UTF8.GetString(bytes.ToArray());
-
-            // Set up the context.
-            this.m_Context = new CSharp.Context();
-            this.m_Context.CreatePrintFunction();
             
             // Create the require function.
             ArrayObject pathsTable = new ArrayObject(this.m_Context.Environment, 0);
-            FunctionObject fo = IronJS.Native.Utils.createHostFunction<Func<string, IronJS.CommonObject>>(this.m_Context.Environment, this.Require);
+            FunctionObject fo = IronJS.Native.Utils.createHostFunction<System.Func<string, IronJS.CommonObject>>(this.m_Context.Environment, this.Require);
             fo.Put("paths", pathsTable);
             this.m_Context.SetGlobal<IronJS.FunctionObject>("require", fo);
 
             // Execute the data.
-            object o = c.Execute(data);
+            object o = this.m_Context.Execute(data);
             return Convert.ToInt32(o);
         }
 
@@ -50,12 +74,10 @@ namespace Node.net
         private IronJS.CommonObject Require(string path)
         {
             // Detect built-in classes.
-
+            if (this.m_Modules.Keys.Contains(path))
+                return this.m_Modules[path];
 
             // Handle other libraries based on paths.
-            ArrayObject a = this.m_Context.GetGlobalAs<FunctionObject>("require").GetT<ArrayObject>("paths");
-
-
             return null;
         }
 
