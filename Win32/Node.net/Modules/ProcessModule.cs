@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Node.net.Modules.Streams;
 
 namespace Node.net.Modules
 {
     internal class ProcessModule : HostModule
     {
-        private StreamWriter m_stdout = null;
-        private StreamWriter m_stderr = null;
-        private StreamReader m_stdin = null;
+        private NodeWritableStream m_stdout = null;
+        private NodeWritableStream m_stderr = null;
+        private NodeReadableStream m_stdin = null;
 
         /// <summary>
         /// The events for this class.
@@ -21,7 +22,7 @@ namespace Node.net.Modules
         /// <summary>
         /// Standard output.
         /// </summary>
-        public StreamWriter stdout
+        public NodeWritableStream stdout
         {
             get { return this.m_stdout; }
         }
@@ -29,7 +30,7 @@ namespace Node.net.Modules
         /// <summary>
         /// Standard error output.
         /// </summary>
-        public StreamWriter stderr
+        public NodeWritableStream stderr
         {
             get { return this.m_stderr; }
         }
@@ -37,7 +38,7 @@ namespace Node.net.Modules
         /// <summary>
         /// Standard input.
         /// </summary>
-        public StreamReader stdin
+        public NodeReadableStream stdin
         {
             get { return this.m_stdin; }
         }
@@ -50,15 +51,15 @@ namespace Node.net.Modules
             : base(env)
         {
             // Open the console streams.
-            this.m_stdout = Console.OpenStandardOutput();
-            this.m_stderr = Console.OpenStandardError();
-            this.m_stdin = Console.OpenStandardInput();
+            this.m_stdout = new NodeWritableStream(env, new StreamWriter(Console.OpenStandardOutput()));
+            this.m_stderr = new NodeWritableStream(env, new StreamWriter(Console.OpenStandardError()));
+            this.m_stdin = new NodeReadableStream(env, new StreamReader(Console.OpenStandardInput()));
         }
 
         /// <summary>
         /// Class for passing event arguments for OnUnhandledException.
         /// </summary>
-        private class UnhandledExceptionEventArgs : AutoWrapEventArgs
+        public class UnhandledExceptionEventArgs : AutoWrapEventArgs
         {
             public Exception Exception;
 

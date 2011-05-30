@@ -95,9 +95,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoWrapObject.cs" />
+    <Compile Include="Modules\Buffers\NodeBuffer.cs" />
     <Compile Include="Modules\DnsModule.cs" />
     <Compile Include="Modules\ProcessModule.cs" />
     <Compile Include="Modules\Streams\Base64Encoding.cs" />
+    <Compile Include="Modules\Streams\NodeWritableStream.cs" />
     <Compile Include="Modules\Streams\NodeReadableStream.cs" />
     <Compile Include="Modules\Streams\NodeStream.cs" />
   </ItemGroup>

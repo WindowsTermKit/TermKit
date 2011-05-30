@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using Node.net.Modules.Buffers;
 
 namespace Node.net.Modules.Streams
 {
@@ -28,12 +29,14 @@ namespace Node.net.Modules.Streams
         /// Constructs a new NodeReadableStream using the specified .NET stream reader.
         /// </summary>
         /// <param name="reader">The .NET StreamReader to wrap.</param>
-        internal NodeReadableStream(StreamReader reader)
+        internal NodeReadableStream(IronJS.Environment env, StreamReader reader)
+            : base(env)
         {
             this.m_Reader = reader;
 
             // Define the handler to respond to asynchronous operations.
-            AsyncCallback handler = (result) =>
+            AsyncCallback handler = null;
+            handler = (result) =>
                 {
                     if (result.IsCompleted)
                     {
@@ -42,7 +45,7 @@ namespace Node.net.Modules.Streams
                         {
                             // Send it now.
                             if (this.m_PipeDestination != null)
-                                this.m_PipeDestination.write(new NodeBuffer(this.m_Buffer, 0, bytes)); // TODO: Support writing as string as well?
+                                this.m_PipeDestination.write(new NodeBuffer(this.Env, this.m_Buffer, 0, bytes)); // TODO: Support writing as string as well?
                             if (this.OnData != null)
                                 this.OnData(this, new DataEventArgs(this.m_Buffer, 0, bytes, this.m_Encoding));
                         }
@@ -53,12 +56,22 @@ namespace Node.net.Modules.Streams
                         }
                         if (this.m_Reader.BaseStream.CanRead)
                             this.m_Reader.BaseStream.BeginRead(this.m_Buffer, 0, 256, handler, null);
+                        else
+                        {
+                            if (this.OnEnd != null)
+                                this.OnEnd(this, new EventArgs());
+                        }
                     }
                 };
 
             // Starts an asynchronous reading operation.
             if (this.m_Reader.BaseStream.CanRead)
                 this.m_Reader.BaseStream.BeginRead(this.m_Buffer, 0, 256, handler, null);
+            else
+            {
+                if (this.OnEnd != null)
+                    this.OnEnd(this, new EventArgs());
+            }
         }
 
         /// <summary>
@@ -113,12 +126,12 @@ namespace Node.net.Modules.Streams
         {
             lock (this.m_ResumeLock)
             {
-                List<DataEventArgs> copy = this.m_Queue.Where(r => true);
+                List<DataEventArgs> copy = this.m_Queue.Where(r => true).ToList();
                 this.m_Queue.Clear();
                 foreach (DataEventArgs e in copy)
                 {
                     if (this.m_PipeDestination != null)
-                        this.m_PipeDestination.write(new NodeBuffer(e.Data, 0, e.Data.Length)); // TODO: Support writing as string as well?
+                        this.m_PipeDestination.write(new NodeBuffer(this.Env, e.Data, 0, e.Data.Length)); // TODO: Support writing as string as well?
                     if (this.OnData != null)
                         this.OnData(this, e);
                 }
@@ -131,7 +144,7 @@ namespace Node.net.Modules.Streams
         /// <summary>
         /// <see>http://nodejs.org/docs/v0.4.8/api/streams.html#stream.write</see>
         /// </summary>
-        public override void write(string data)
+        public override bool write(string data)
         {
             throw new NotSupportedException();
         }
@@ -139,7 +152,7 @@ namespace Node.net.Modules.Streams
         /// <summary>
         /// <see>http://nodejs.org/docs/v0.4.8/api/streams.html#stream.write</see>
         /// </summary>
-        public override void write(string data, string encoding)
+        public override bool write(string data, string encoding)
         {
             throw new NotSupportedException();
         }
@@ -147,7 +160,7 @@ namespace Node.net.Modules.Streams
         /// <summary>
         /// <see>http://nodejs.org/docs/v0.4.8/api/streams.html#stream.write</see>
         /// </summary>
-        public override void write(string data, string encoding, object fd)
+        public override bool write(string data, string encoding, object fd)
         {
             throw new NotSupportedException();
         }
@@ -155,7 +168,7 @@ namespace Node.net.Modules.Streams
         /// <summary>
         /// <see>http://nodejs.org/docs/v0.4.8/api/streams.html#stream.write</see>
         /// </summary>
-        public override void write(NodeBuffer buffer)
+        public override bool write(NodeBuffer buffer)
         {
             throw new NotSupportedException();
         }
@@ -190,6 +203,8 @@ namespace Node.net.Modules.Streams
         public override void destroy()
         {
             this.m_Reader.Close();
+            if (this.OnClose != null)
+                this.OnClose(this, new EventArgs());
         }
 
         /// <summary>
@@ -204,7 +219,7 @@ namespace Node.net.Modules.Streams
         /// <summary>
         /// <see>http://nodejs.org/docs/v0.4.8/api/streams.html#stream.pipe</see>
         /// </summary>
-        public override void pipe(NodeStream destination)
+        public override void pipe(NodeWritableStream destination)
         {
             pipe(destination, null);
         }
@@ -212,9 +227,10 @@ namespace Node.net.Modules.Streams
         /// <summary>
         /// <see>http://nodejs.org/docs/v0.4.8/api/streams.html#stream.pipe</see>
         /// </summary>
-        public override void pipe(NodeStream destination, IronJS.Array options)
+        public override void pipe(NodeWritableStream destination, IronJS.ArrayObject options)
         {
             this.m_PipeDestination = destination;
+            this.m_PipeDestination.DoPipe(this);
         }
     }
 }

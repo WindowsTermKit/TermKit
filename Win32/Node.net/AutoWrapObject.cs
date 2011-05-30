@@ -180,7 +180,7 @@ namespace IronJS
 
         public abstract class AutoWrapEventArgs : EventArgs
         {
-            public abstract BoxedValue[] GetParameters() { }
+            public abstract BoxedValue[] GetParameters();
         }
     }
 }

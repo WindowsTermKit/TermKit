@@ -3,27 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using IronJS;
+using Node.net.Modules.Buffers;
 
 namespace Node.net.Modules.Streams
 {
-    internal abstract class NodeStream : AutoWrapObject
+    public abstract class NodeStream : AutoWrapObject
     {
+        protected NodeStream(IronJS.Environment env) : base(env) { }
+
         public abstract bool writable { get; }
         public abstract bool readable { get; }
-        public abstract void setEncoding(string encoding) { }
-        public abstract void pause() { }
-        public abstract void resume() { }
-        public abstract void write(string data) { }
-        public abstract void write(string data, string encoding) { }
-        public abstract void write(string data, string encoding, object fd) { }
-        public abstract void write(NodeBuffer buffer) { }
-        public abstract void end() { }
-        public abstract void end(string data, string encoding) { }
-        public abstract void end(NodeBuffer buffer) { }
-        public abstract void destroy() { }
-        public abstract void destroySoon() { }
-        public abstract void pipe(NodeWriteableStream destination) { }
-        public abstract void pipe(NodeWriteableStream destination, IronJS.Array options) { }
+        public abstract void setEncoding(string encoding);
+        public abstract void pause();
+        public abstract void resume();
+        public abstract bool write(string data);
+        public abstract bool write(string data, string encoding);
+        public abstract bool write(string data, string encoding, object fd);
+        public abstract bool write(NodeBuffer buffer);
+        public abstract void end();
+        public abstract void end(string data, string encoding);
+        public abstract void end(NodeBuffer buffer);
+        public abstract void destroy();
+        public abstract void destroySoon();
+        public abstract void pipe(NodeWritableStream destination);
+        public abstract void pipe(NodeWritableStream destination, IronJS.ArrayObject options);
 
         /// <summary>
         /// Class for passing event arguments for OnData.
@@ -56,16 +59,39 @@ namespace Node.net.Modules.Streams
                 if (this.m_Encoding != null)
                 {
                     // Return a string.
-                    return new IronJS.BoxedValue[]
+                    return new BoxedValue[]
                         {
-                            this.m_Encoding.GetString(this.m_Data)
+                            BoxedValue.Box(this.m_Encoding.GetString(this.m_Data))
                         };
                 }
                 else
                 {
                     // TODO: Return a raw buffer.
-                    return new IronJS.Undefined();
+                    return new BoxedValue[]
+                        {
+                        };
                 }
+            }
+        }
+
+        /// <summary>
+        /// Class for passing event arguments for OnPipe.
+        /// </summary>
+        public class PipeEventArgs : AutoWrapEventArgs
+        {
+            private NodeReadableStream m_Src = null;
+
+            public PipeEventArgs(NodeReadableStream src)
+            {
+                this.m_Src = src;
+            }
+
+            public override BoxedValue[] GetParameters()
+            {
+                return new BoxedValue[]
+                    {
+                        BoxedValue.Box(this.m_Src)
+                    };
             }
         }
 
