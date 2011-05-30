@@ -16,7 +16,7 @@ $(document).ready(function () {
       dl_SetInitStatus(dl_CurrentID, "Console started.", dl_OKAY);
     });    
   };
-
+  
 });
 
 })(jQuery);

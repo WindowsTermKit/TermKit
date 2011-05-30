@@ -1,5 +1,7 @@
 Tasks:
-[ ] cat/echo Piping + progress bar
+[X] return process meta-data in environment
+[ ] backgrounding / new command trigger
+[ ] command aliases
 [ ] command decoration
 [ ] interactive execution
 [ ] inline man-pages tips
@@ -108,7 +110,9 @@ Prototype:
     [X] full mime header parser/generator
     [X] smart binary output
     [ ] handle encodings
-  [ ] preferences
+  [ ] backgrounding / new command trigger
+  [ ] command aliases
+  [X] preferences
   [ ] sudo support (askpass env?)
 
 5) Command Suite

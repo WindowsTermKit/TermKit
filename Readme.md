@@ -6,7 +6,9 @@
 
 Built out of WebKit and Node.js.
 
-Runs in a Mac/Cocoa app, and can be hacked into any WebKit browser (Chrome, Safari).
+Runs as a desktop app on Mac and Windows, and can be hacked into any WebKit browser (Chrome, Safari).
+
+[Follow TermKit on Twitter](https://twitter.com/TermKit) for the latest news and updates.
 
 For the background and architecture, please read and comment on:
 http://acko.net/blog/on-termkit
@@ -34,18 +36,35 @@ http://acko.net/blog/on-termkit
 
 ## How to use:
 
+Detailed instructions are available from these sources:
+
+* [Mac OS X (OS X Daily)](http://osxdaily.com/2011/05/19/termkit-terminal-reimagined-how-to-install/)
+* [Windows (Redpoint blog)](http://blog.redpointsoftware.com.au/termkit/)
+* [Linux, Chrome only (Easytech blog)](http://blog.easytech.com.ar/2011/05/21/playing-with-termkit-with-chrome/) 
+
 Unfortunately, TermKit currently requires some assembly.
 
 1. Install the Mac development tools (Xcode and friends).
 2. [Install node.js](https://github.com/joyent/node/wiki/Installation).
 3. If not covered in #2, install npm: `curl http://npmjs.org/install.sh | sh`
 4. Install node-mime: `npm install mime`
-5. Clone the TermKit repository: `git clone git@github.com:unconed/TermKit.git --recursive`
+5. Clone the TermKit repository: `git clone https://github.com/unconed/TermKit.git --recursive`
 6. Users of older git versions will need to type: `git submodule update --init`
 7. Run the NodeKit daemon: `cd TermKit/Node; node nodekit.js`
 8. Unzip and run the Mac app in Build/TermKit.zip
 
 *Tip:* Press ⌥⌘C to access the WebKit console.
+
+## API
+
+Preliminary instructions on how to write TermKit native commands can be found here:
+https://github.com/unconed/TermKit/blob/master/Node-API.md
+
+## Credits
+
+TermKit by [Steven Wittens](http://acko.net) ([@unconed](https://twitter.com/unconed)).
+
+Windows port by James Rhodes ([@hachque](https://twitter.com/hachque)).
 
 Includes:
 

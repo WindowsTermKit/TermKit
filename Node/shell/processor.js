@@ -39,7 +39,7 @@ exports.processor.prototype = {
   // Parse JSON command.
   receive: function (data) {
     try {
-      var message = JSON.parse(data);
+      var message = JSON.parse(data), view;
       if (typeof message == 'object') {
         var that = this,
             exit, returned;
@@ -53,13 +53,17 @@ exports.processor.prototype = {
           exit = function (success, object, meta) {
             
             if (!returned) {
+              // Format return value.
               meta = meta || {};
-              meta.success = !!success;
+              meta.success = success;
 
               meta.answer = message.query;
               meta.args = object;
 
+              // Send answer back.
               that.send(meta);
+
+              // Only return once.
               returned = true;
             }
           };
@@ -67,11 +71,18 @@ exports.processor.prototype = {
         }
 
         if (typeof message.answer == 'number') {
-          // unsupported. worker can't make queries.
+          // Unsupported. worker can't make queries.
           return;
         }
 
-        handler && handler.call(this, message.args, exit);
+        // Handle internal events.
+        if (handler) {
+          handler.call(this, message.args, exit);
+        }
+        // Dispatch to process viewIn.
+        else if (args.view && (view = this.views[args.view])) {
+          view.emit(message);
+        }
       }
     }
     catch (e) {
@@ -79,13 +90,13 @@ exports.processor.prototype = {
   },
   
   // Establish a view stream.
-  attach: function (view, emitter) {
-    this.views[view] = emitter;
+  attach: function (view) {
+    this.views[view.id] = view;
   },
   
   // Drop a view stream.
   detach: function (view) {
-    delete this.views[view];
+    delete this.views[view.id];
   },
   
   // Invoke an asynchronous method.
@@ -95,6 +106,11 @@ exports.processor.prototype = {
       args: args,
     };
     this.send(message);
+  },
+
+  // Store command status in environment.
+  status: function (success, object) {
+    this.status = { success: success, data: object };
   },
   
   // Return the environment.
@@ -108,6 +124,7 @@ exports.processor.prototype = {
       path: process.env.PATH.split(':'),
       manPath: process.env.MANPATH,
       defaultShell: process.env.SHELL,
+      command: this.status,
     };
   },
 };
@@ -157,7 +174,10 @@ workerProcessor.handlers = {
         tokens = args.tokens,
         rel = args.rel;
 
+    // Wrap exit callback to pass back updated environment.
     var shellExit = function (success, object, meta) {
+      that.status(success, object);
+
       meta = meta || {};
       meta.environment = that.environment();
       exit(success, object, meta);
@@ -177,8 +197,4 @@ workerProcessor.handlers = {
     };
   },
   
-  "view.callback": function (args, exit) {
-    
-  },
-
 };

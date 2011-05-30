@@ -17,10 +17,15 @@ exports.outputView = function (processor) {
   var id = this.id = outputViewCounter++;
 
   // Generate 'view in' emitter for this view.
+  // Fires 'message' events on pipes.viewIn.
   this.emitter = new EventEmitter();
+  this.emit = function (message) {
+    this.emitter.emit('message', message.method, message.args);
+  };
 
-  // Generate 'view out' invoke method locked to one view.
+  // Generate 'view out' invoke method pipes.viewOut(), locked to one view.
   this.invoke = function (method, args) {
+    args = args || {};
     args.view = id;
     processor.notify(method, args);
   };
@@ -39,15 +44,16 @@ exports.commandList = function (processor, tokens, exit, rel) {
   for (var i = 0; i <= n; ++i) {
     view = new exports.outputView(processor);
     views.push(view);
-
-    // Attach view's emitter to viewstream.
-    processor.attach(view.id, view.emitter);
   }
 
   // Allocate view streams on client side.
   processor.notify('view.open', {
     rel: rel,
-    views: views.map(function (v) { return v.id; }),
+    views: views.map(function (view) {
+      // Attach view's emitter to viewstream.
+      processor.attach(view);
+      return view.id;
+    }),
   });
 
   // Track exit of processes.
@@ -55,7 +61,11 @@ exports.commandList = function (processor, tokens, exit, rel) {
       track = whenDone(function () {
         // Detach all views.
         processor.notify('view.close', {
-          views: views.map(function (v) { return v.id; }),
+          views: views.map(function (view) {
+            // Detach view's emitter from viewstream.
+            processor.detach(view);
+            return view.id;
+          }),
         });
 
         // Return the last exit info to the shell.
@@ -63,7 +73,8 @@ exports.commandList = function (processor, tokens, exit, rel) {
       });
 
   // Create command units.
-  var that = this;
+  var that = this,
+      environment = processor.environment();
   this.units = tokens.map(function (command, i) {
     // Track exit invocation.
     var exit = track(function (success, object) {
@@ -72,7 +83,7 @@ exports.commandList = function (processor, tokens, exit, rel) {
         returns = [ success, object ];
       }
     });
-    return exports.commandFactory(command, views[i].emitter, views[i].invoke, exit);
+    return exports.commandFactory(command, views[i].emitter, views[i].invoke, exit, environment);
   });
   
   // Spawn and link together.
@@ -100,22 +111,22 @@ exports.commandList.prototype = {
 /**
  * Command unit factory.
  */
-exports.commandFactory = function (command, emitter, invoke, exit) {
+exports.commandFactory = function (command, emitter, invoke, exit, environment) {
   var unit;
   try {
     // Try built-in.
-    unit = new exports.commandUnit.builtinCommand(command, emitter, invoke, exit);
+    unit = new exports.commandUnit.builtinCommand(command, emitter, invoke, exit, environment);
     unit.spawn();
   }
   catch (e) {
     try {
       // Try native command.
-      unit = new exports.commandUnit.unixCommand(command, emitter, invoke, exit);
+      unit = new exports.commandUnit.unixCommand(command, emitter, invoke, exit, environment);
       unit.spawn();
     }
     catch (e) {
       // Execute null.js fallback.
-      unit = new exports.commandUnit.builtinCommand(command, emitter, invoke, exit);
+      unit = new exports.commandUnit.builtinCommand(command, emitter, invoke, exit, environment);
       unit.override = 'null';
       unit.spawn();
     }
@@ -127,11 +138,12 @@ exports.commandFactory = function (command, emitter, invoke, exit) {
 /**
  * A single command in a pipeline.
  */
-exports.commandUnit = function (command, emitter, invoke, exit) {
+exports.commandUnit = function (command, emitter, invoke, exit, environment) {
   this.command = command;
   this.emitter = emitter;
   this.invoke = invoke;
   this.exit = exit;
+  this.environment = environment;
 };
 
 exports.commandUnit.prototype = {
@@ -160,7 +172,7 @@ exports.commandUnit.prototype = {
 /**
  * Built-in command.
  */
-exports.commandUnit.builtinCommand = function (command, emitter, invoke, exit) {
+exports.commandUnit.builtinCommand = function (command, emitter, invoke, exit, environment) {
   exports.commandUnit.apply(this, arguments);
 }
 
@@ -246,14 +258,14 @@ exports.commandUnit.builtinCommand.prototype.go = function () {
   };
   
   async(function () {
-    that.handler.main.call(that, that.command, pipes, exit);
+    that.handler.main.call(that, that.command, pipes, exit, this.environment);
   });
 };
 
 /**
  * UNIX command.
  */
-exports.commandUnit.unixCommand = function (command, emitter, invoke, exit) {
+exports.commandUnit.unixCommand = function (command, emitter, invoke, exit, environment) {
   exports.commandUnit.apply(this, arguments);
 }
 
@@ -267,7 +279,7 @@ exports.commandUnit.unixCommand.prototype.spawn = function () {
   this.process = spawn(prefix, command);
 
   this.process.on('exit', function (code) {
-    that.exit(!code);
+    that.exit(!code, { code: code });
   });
 };
 

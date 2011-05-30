@@ -5,11 +5,14 @@ using System.Text;
 using System.IO;
 using IronJS.Hosting;
 using IronJS.Compiler;
+using IronJS;
 
 namespace Node.net
 {
     public class HostEngine
     {
+        private CSharp.Context m_Context = null;
+
         /// <summary>
         /// Executes the given stream as a Javascript file under Node.js.
         /// </summary>
@@ -25,14 +28,14 @@ namespace Node.net
             string data = Encoding.UTF8.GetString(bytes.ToArray());
 
             // Set up the context.
-            CSharp.Context c = new CSharp.Context();
-            c.CreatePrintFunction();
+            this.m_Context = new CSharp.Context();
+            this.m_Context.CreatePrintFunction();
             
             // Create the require function.
-            IronJS.ArrayObject pathsTable = new IronJS.ArrayObject(c.Environment, 0);
-            IronJS.FunctionObject fo = IronJS.Native.Utils.createHostFunction<Func<string, IronJS.CommonObject>>(c.Environment, this.Require);
+            ArrayObject pathsTable = new ArrayObject(this.m_Context.Environment, 0);
+            FunctionObject fo = IronJS.Native.Utils.createHostFunction<Func<string, IronJS.CommonObject>>(this.m_Context.Environment, this.Require);
             fo.Put("paths", pathsTable);
-            c.SetGlobal<IronJS.FunctionObject>("require", fo);
+            this.m_Context.SetGlobal<IronJS.FunctionObject>("require", fo);
 
             // Execute the data.
             object o = c.Execute(data);
@@ -46,6 +49,13 @@ namespace Node.net
         /// <returns>The returned object.</returns>
         private IronJS.CommonObject Require(string path)
         {
+            // Detect built-in classes.
+
+
+            // Handle other libraries based on paths.
+            ArrayObject a = this.m_Context.GetGlobalAs<FunctionObject>("require").GetT<ArrayObject>("paths");
+
+
             return null;
         }
 

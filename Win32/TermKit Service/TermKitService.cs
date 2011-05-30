@@ -11,6 +11,8 @@ namespace Server
 {
     public partial class TermKitService : ServiceBase
     {
+        Process m_NodeJS = null;
+
         public TermKitService()
         {
             InitializeComponent();
@@ -18,6 +20,9 @@ namespace Server
 
         protected override void OnStart(string[] args)
         {
+            if (this.m_NodeJS == null)
+            {
+            }
         }
 
         protected override void OnStop()
