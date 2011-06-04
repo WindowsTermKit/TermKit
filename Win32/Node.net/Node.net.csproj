@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoWrapObject.cs" />
+    <Compile Include="EventManager.cs" />
     <Compile Include="Modules\Buffers\NodeBuffer.cs" />
     <Compile Include="Modules\DnsModule.cs" />
     <Compile Include="Modules\ProcessModule.cs" />

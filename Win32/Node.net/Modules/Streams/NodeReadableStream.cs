@@ -33,6 +33,7 @@ namespace Node.net.Modules.Streams
             : base(env)
         {
             this.m_Reader = reader;
+            EventManager.Add(this);
 
             // Define the handler to respond to asynchronous operations.
             AsyncCallback handler = null;
@@ -41,7 +42,12 @@ namespace Node.net.Modules.Streams
                     if (result.IsCompleted)
                     {
                         int bytes = this.m_Reader.BaseStream.EndRead(result);
-                        if (!this.m_Paused)
+
+                        if (bytes == 0)
+                        {
+                            // There is no data at the moment.
+                        }
+                        else if (!this.m_Paused && (this.OnData != null || this.m_PipeDestination != null))
                         {
                             // Send it now.
                             if (this.m_PipeDestination != null)
@@ -54,23 +60,51 @@ namespace Node.net.Modules.Streams
                             // Queue it up.
                             this.m_Queue.Add(new DataEventArgs(this.m_Buffer, 0, bytes, this.m_Encoding));
                         }
-                        if (this.m_Reader.BaseStream.CanRead)
+
+                        if (this.m_Reader.BaseStream.Length != this.m_Reader.BaseStream.Position || this.m_Queue.Count > 0)
                             this.m_Reader.BaseStream.BeginRead(this.m_Buffer, 0, 256, handler, null);
                         else
                         {
                             if (this.OnEnd != null)
                                 this.OnEnd(this, new EventArgs());
+                            EventManager.Remove(this);
                         }
                     }
                 };
 
             // Starts an asynchronous reading operation.
-            if (this.m_Reader.BaseStream.CanRead)
+            if (this.m_Reader.BaseStream.Length != this.m_Reader.BaseStream.Position)
                 this.m_Reader.BaseStream.BeginRead(this.m_Buffer, 0, 256, handler, null);
             else
             {
                 if (this.OnEnd != null)
                     this.OnEnd(this, new EventArgs());
+                EventManager.Remove(this);
+            }
+        }
+
+        /// <summary>
+        /// Recieve notification that an event has been attached.
+        /// </summary>
+        private void OnAttach(string name)
+        {
+            switch (name)
+            {
+                case "data":
+                    // Send any data messages that may be in the queue.
+                    lock (this.m_ResumeLock)
+                    {
+                        List<DataEventArgs> copy = this.m_Queue.Where(r => true).ToList();
+                        this.m_Queue.Clear();
+                        foreach (DataEventArgs e in copy)
+                        {
+                            if (this.m_PipeDestination != null)
+                                this.m_PipeDestination.write(new NodeBuffer(this.Env, e.Data, 0, e.Data.Length)); // TODO: Support writing as string as well?
+                            if (this.OnData != null)
+                                this.OnData(this, e);
+                        }
+                    }
+                    return;
             }
         }
 

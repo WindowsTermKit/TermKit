@@ -69,6 +69,7 @@ namespace Node.net.Modules.Streams
                     // TODO: Return a raw buffer.
                     return new BoxedValue[]
                         {
+                            BoxedValue.Box(Encoding.ASCII.GetString(this.m_Data))
                         };
                 }
             }

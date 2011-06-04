@@ -6,6 +6,7 @@ using System.IO;
 using IronJS.Hosting;
 using IronJS.Compiler;
 using IronJS;
+using System.Threading;
 
 namespace Node.net
 {
@@ -62,8 +63,14 @@ namespace Node.net
             this.m_Context.SetGlobal<IronJS.FunctionObject>("require", fo);
 
             // Execute the data.
-            object o = this.m_Context.Execute(data);
-            return Convert.ToInt32(o);
+            this.m_Context.Execute(data);
+
+            // Enter our main loop while we wait until everything has closed.
+            while (!EventManager.IsFinished())
+                Thread.Sleep(100);
+
+            // Return (there is no data).
+            return 0;
         }
 
         /// <summary>

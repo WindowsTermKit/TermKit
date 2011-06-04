@@ -25,6 +25,7 @@ namespace Node.net.Modules.Streams
             : base(env)
         {
             this.m_Writer = writer;
+            EventManager.Add(this);
         }
 
         /// <summary>
@@ -170,6 +171,7 @@ namespace Node.net.Modules.Streams
             this.m_Writer.Close();
             if (this.OnClose != null)
                 this.OnClose(this, new EventArgs());
+            EventManager.Remove(this);
         }
 
         /// <summary>

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using IronJS;
+using System.IO;
+using Node.net.Modules.Streams;
 
 namespace Node.net.Modules
 {
@@ -14,6 +17,12 @@ namespace Node.net.Modules
         public FsModule(IronJS.Environment env)
             : base(env)
         {
+        }
+
+        public CommonObject open(string filename)
+        {
+            StreamReader reader = new StreamReader(filename);
+            return new NodeReadableStream(this.Env, reader);
         }
     }
 }
